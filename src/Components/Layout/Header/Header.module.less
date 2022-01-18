@@ -1,0 +1,41 @@
+@import "~antd/lib/style/themes/dark.less";
+
+.header {
+  background-color: @component-background;
+  border-bottom: 1px solid @border-color-split;
+  box-shadow: @shadow-2;
+  z-index: 1;
+  line-height: 64px;
+  height: 64px;
+  display: flex;
+}
+
+.divider {
+  margin: auto 0;
+  height: 50%;
+}
+.col {
+  display: flex;
+}
+
+.logo {
+  background-color: fade(@white, 20%);
+  box-sizing: border-box;
+  border-radius: 5px;
+  line-height: 64px - 40px;
+  margin: 10px 20px 10px -20px;
+  width: 150px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  &Text {
+    margin: 0;
+    color: @component-background;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+}
+
+.control {
+  margin-left: auto;
+}

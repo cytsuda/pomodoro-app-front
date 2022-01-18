@@ -1,0 +1,65 @@
+@import "~antd/lib/style/themes/dark.less";
+
+.container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  &.active {
+    & .icons {
+      width: 80px;
+      margin-left: 8px;
+      border-color: @border-color-split;
+      border-radius: 4px;
+    }
+  }
+  &:hover {
+    & .icons {
+      width: 80px;
+      margin-left: 8px;
+    }
+  }
+}
+.todo {
+  // border: 1px solid @border-color-split;
+  background-color: @background-color-light;
+  padding: 8px 16px;
+  border-radius: 4px;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  box-shadow: @btn-primary-shadow;
+}
+
+.checkbox {
+  &.checked {
+    text-decoration: line-through;
+  }
+}
+
+.pomos {
+  margin-left: auto;
+  border: 1px solid @border-color-split;
+  padding: 0 4px;
+  border-radius: 4px;
+}
+
+.icons {
+  align-self: stretch;
+  box-sizing: border-box;
+  border: 1px solid transparent;
+  display: block;
+  overflow: hidden;
+  margin-left: 4px;
+  transition: all 0.2s ease-in-out;
+  width: 6px;
+  &Inner {
+    height: 100%;
+    display: flex;
+    padding: 8px 12px;
+    border-radius: 4px;
+    align-items: center;
+    flex-direction: row;
+    justify-content: space-between;
+    background-color: fade(#fff, 2);
+  }
+}

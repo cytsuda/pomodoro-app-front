@@ -1,17 +1,32 @@
+@import "~antd/lib/style/themes/dark.less";
+
+// TODO -remove if works
 .main {
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
-.logo {
-  height: 32px;
-  margin: 16px;
-  background: rgba(255, 255, 255, 0.3);
+.container {
+  flex: 1;
+  max-height: 100vh;
 }
+
 .content {
-  padding: 16px;
+  flex: 1;
+  background-color: @component-background;
+  display: flex;
+  flex-direction: column;
+  padding: 16px 32px;
+  &Wrapper {
+    padding: 16px 32px;
+  }
 }
 
-.footer {
-  text-align: center;
-  background: rgba(255, 255, 255, 0.01);
+.menu {
+  padding-top: 16px;
+  height: 100%;
+  &Item {
+    padding-left: 30px;
+  }
 }

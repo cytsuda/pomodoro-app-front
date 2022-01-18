@@ -1,104 +1,100 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import moment from "moment";
+import produce from "immer";
+
+// Redux
+import { useSelector, useDispatch } from 'react-redux';
+import { changeWork } from "@/Redux/timerReducer"
 
 // AntDesign Components & icons
-import { Typography, Button, InputNumber, Space, Progress, Statistic } from "antd";
-import { ClockCircleOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons';
+import { Typography, Row, Col, Card, Timeline } from "antd";
 
+// Custom components
+import TimerComponent from "@/Components/TimerComponent/TimerComponent";
+import TaskListComponent from "@/Components/TaskList/TaskList";
 
+// Classes & Styles
 import classes from "./Clock.module.less";
 
 const { Title } = Typography;
-const { Countdown } = Statistic;
 
 const getTimeDuration = (value: number) => {
   return value * 1000;
 }
 
-type ActiveType = {
-  active: boolean,
-  timer: number | string | undefined
-}
 const ClockPage = () => {
-
-  const [percent, setPercent] = useState<number>(0)
-  const [duration, setDuration] = useState<number>(20);
-  const [active, setActive] = useState<ActiveType>({
+  const timer = useSelector((state: RootState) => state.timer);
+  const [countdown, setCountdow] = useState<TimerType>({
     active: false,
+    percent: 0,
     timer: 0
   });
 
-  const countdownChange = (e: number | string | undefined) => {
-    if (e !== undefined) {
-      const value = typeof e === "string" ? Number(e) / getTimeDuration(duration) : e / getTimeDuration(duration);
-      setPercent(Math.round((1 - value) * 100));
+  const statisticValue = moment(getTimeDuration(timer.workDuration)).format("mm:ss");
+
+
+  const countdownChangeHandler = useCallback((value: number | string | undefined) => {
+    if (value !== undefined) {
+      const workDuration = getTimeDuration(timer.workDuration);
+      const newValue = typeof value === 'string' ? Number(value) / workDuration : value / workDuration;
+      setCountdow(produce(draft => {
+        draft.percent = Math.round((1 - newValue) * 100);
+      }));
     }
-  }
+  }, []);
+
+
+  const countdownStartHandler = useCallback(() => {
+    setCountdow(
+      produce((draft) => {
+        draft.active = true;
+        draft.timer = Date.now() + getTimeDuration(timer.workDuration);
+      })
+    );
+  }, []);
+
+  const countdownStopHandler = useCallback(() => {
+    setCountdow(produce((draft) => {
+      draft.active = false;
+      draft.timer = 0;
+      draft.percent = 0;
+    }))
+  }, []);
 
   return (
     <div className={classes.main}>
       <Title level={2}>
-        Clock Page
+        Clock/Working Page
       </Title>
-      <div className={classes.container}>
-
-        <Progress
-          style={{ margin: "12px auto" }}
-          type="circle"
-          percent={percent}
-          format={() => active.active ? (
-            <Countdown
-              value={active.active ? active.timer : 0}
-              onChange={countdownChange}
-              format={"mm:ss"}
-            />
-          ) : (
-            <Statistic value={moment(getTimeDuration(duration)).format("mm:ss")} />
-          )}
-        />
-
-        {active.active ? (
-          <Button
-            type="primary"
-            danger
-            onClick={() => setActive(prev => ({
-              timer: 0,
-              active: false,
-            }))}
-          >
-            Stop
-          </Button>
-        ) : (
-          <Button
-            type="primary"
-            onClick={() => setActive(prev => ({
-              timer: Date.now() + getTimeDuration(duration),
-              active: true,
-            }))}
-          >
-            Start
-          </Button>
-
-        )}
-        <div className={classes.box}>
-          <Button
-            type="primary"
-            shape="circle"
-            onClick={() => console.log("sub")}
-            icon={<MinusOutlined />}
+      <Row gutter={[32, 32]} align="stretch">
+        <Col span={6} >
+          <TimerComponent
+            defaultValue={statisticValue}
+            countdown={countdown}
+            onStart={countdownStartHandler}
+            onStop={countdownStopHandler}
+            countOnChange={countdownChangeHandler}
           />
-          <span className={classes.boxNumber}>
-            duration
-          </span>
-          <Button
-            type="primary"
-            shape="circle"
-            onClick={() => console.log("add")}
-            icon={<PlusOutlined />}
-          />
-        </div>
+        </Col>
+        <Col span={18} >
+          <TaskListComponent />
+        </Col>
+        <Col span={6} >
+          <Card title="Complete tasks and when">
+            <Timeline mode="left">
+              <Timeline.Item>
+                <p>12/12/12 22:03:02</p>
+                <p>Solve initial network problems 1</p>
+                <p>Solve initial network problems 2</p>
+              </Timeline.Item>
+              <Timeline.Item color='red'>Solve initial network problems</Timeline.Item>
+              <Timeline.Item>Technical testing</Timeline.Item>
+              <Timeline.Item>Network problems being solved</Timeline.Item>
+            </Timeline>
+          </Card>
+        </Col>
+      </Row>
 
-      </div>
     </div >
   );
 }

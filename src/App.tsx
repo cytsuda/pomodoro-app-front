@@ -15,6 +15,8 @@ function App() {
         <Route path="" element={<HomePage />} />
         <Route path="clock" element={<ClockPage />} />
         <Route path="projects" element={<ProjectsPage />} />
+        {/* TODO - add project/:id page, show tasks*/}
+        {/* TODO - add project/task/:id page */}
       </Route>
     </Routes>
   );
