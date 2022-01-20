@@ -6,4 +6,9 @@ const api = (token?: string) => axios.create({
   headers: token ? { 'Authorization': 'Bearer ' + token } : undefined
 });
 
+export const path = {
+  register: 'api/auth/local/register',
+  login: 'api/auth/local'
+}
+
 export default api;

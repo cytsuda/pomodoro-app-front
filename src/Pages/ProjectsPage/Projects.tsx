@@ -19,13 +19,13 @@ const query = qs.stringify({
 
 const ProjectPage = () => {
   const [data, setData] = useState<any>();
-  useEffect(() => {
-    const getData = async () => {
-      const { data } = await axios().get(`api/projects?${query}`,);
-      setData(data.data);
-    }
-    getData();
-  }, []);
+  // useEffect(() => {
+  //   const getData = async () => {
+  //     const { data } = await axios().get(`api/projects?${query}`,);
+  //     setData(data.data);
+  //   }
+  //   getData();
+  // }, []);
 
   return (
     <>

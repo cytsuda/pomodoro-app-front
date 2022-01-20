@@ -1,18 +1,22 @@
 import React from "react";
 
 // antdesign components
-import { Row, Menu, Avatar, Col, Dropdown, Typography, Divider, Layout } from "antd";
+import { Menu, Avatar, Dropdown, Typography, Layout } from "antd";
 import { UserOutlined } from '@ant-design/icons';
 
 // class
 import classes from "./Header.module.less";
 
+// Desconstructor
 const { Text } = Typography;
-
 const { Header } = Layout;
 
-const HeaderComponent = () => {
+type HeaderComponentType = {
+  logout: () => void;
+}
 
+const HeaderComponent = (props: HeaderComponentType) => {
+  const { logout } = props;
   const AvatarMenu = <Menu
     theme="light"
     mode="horizontal"
@@ -29,10 +33,8 @@ const HeaderComponent = () => {
         2nd menu item
       </a>
     </Menu.Item>
-    <Menu.Item>
-      <a target="_blank" rel="noopener noreferrer" href="https://www.luohanacademy.com">
-        3rd menu item
-      </a>
+    <Menu.Item onClick={logout}>
+      Logout
     </Menu.Item>
   </Menu>
 

@@ -1,50 +1,37 @@
-# Getting Started with Create React App
+# Pomo App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## System functionalities
 
-## Available Scripts
+### User configuration/preference
 
-In the project directory, you can run:
+App needs to load user preference and change behavior;
+[ ] - System Preference: sounds, types of notifications, date and time format and possible other stuffs
+[ ] - Pomo preference: pomo duration, short break duration, long break duration, the quantity of pomos needs to be completed before the start of the long break.
+[ ] - Goal (Objectives) preference: daily pomos,weekly pomos and monthly pomos
+[ ] - History
+[ ] - List of Todos
 
-### `yarn start`
+### Possible objects
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Create a `task object` that will represent the tasks create by users.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+Task Object need to have:
 
-### `yarn test`
+- [x] - Title: a very short text to describe what the task is about;
+- [x] - Note: a text to add information, details or notes about the task;
+- [x] - Expected number of pomodoros: an integer value representing how many pomodoros work cycles it will take to finish the task;
+- [x] - Finish: a boolean value representing whether the task completed or not;
+- [x] - Finish Date: the date when the task was completed;
+- [x] - Remind: date to remind about task;
+- [] - Sublist: an array of subtaks;
+  - [x] - Title: very short text
+  - [x] - Complete: a flag to show if the subtask is complete
+  - [x] - Reference: a relationship with parent task
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+History is an array of pomodoros, that includes tasks, dates and others related informations.
 
-### `yarn build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `yarn eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-## Task life cycle
-
-https://www.guru99.com/defect-life-cycle.html
+- Pomodoro:
+  - [x] - Start Date: when pomodoro start;
+  - [x] - End Date: when pomodoro ends;
+  - [x] - Tasks: Worked task list;
+- Date: Date of the first pomodoro
