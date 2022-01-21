@@ -20,3 +20,31 @@
   flex-direction: column;
   grid-gap: 4px;
 }
+.refresh {
+  margin-left: auto;
+  margin-right: 16px;
+}
+.task {
+  display: flex;
+  border: 1px solid @border-color-base;
+
+  &Input {
+    border: none;
+    width: 0;
+    transition: all 0.2s ease-in-out;
+    padding-left: 0;
+    padding-right: 0;
+
+    &.focus {
+      box-shadow: none;
+      width: 250px;
+      margin-left: inherit;
+      padding-left: 11px;
+      padding-right: 11px;
+    }
+  }
+  &Btn {
+    margin: -1px;
+    width: 90px;
+  }
+}

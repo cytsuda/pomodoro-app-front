@@ -8,8 +8,8 @@ import {
 } from '@ant-design/icons';
 
 // Reducer
-// import { useSelector } from 'react-redux';
-
+import { useDispatch } from 'react-redux';
+import { getToken } from "@/Redux/userReducer";
 // Cookie
 import { useCookies } from 'react-cookie';
 
@@ -27,11 +27,17 @@ const { Content, Sider } = Layout;
 const LayoutPage = () => {
   const [cookie, , removeCookie] = useCookies();
   const location = useLocation();
+  const dispatch = useDispatch();
 
   const [collapse, setCollapse] = useState<boolean>(false);
+
   if (!cookie.token) {
     return <Navigate to="/login" state={{ from: location }} replace />
   }
+
+  dispatch(getToken({
+    token: cookie.token
+  }));
 
   return (
     <Layout className={classes.main}>
@@ -58,6 +64,32 @@ const LayoutPage = () => {
               <Link to="/projects">
                 Projects
               </Link>
+            </Menu.Item>
+            <Menu.Divider style={{ marginTop: "auto" }} />
+            <Menu.Item key="4" icon={<ProjectOutlined />} >
+              <a href="https://docs.strapi.io/developer-docs/latest/getting-started/introduction.html">
+                Strapi Docs
+              </a>
+            </Menu.Item>
+            <Menu.Item key="6" icon={<ProjectOutlined />} >
+              <a href="https://ant.design/components/overview/?theme=dark">
+                Ant Design docs
+              </a>
+            </Menu.Item>
+            <Menu.Item key="7" icon={<ProjectOutlined />} >
+              <a href="https://www.npmjs.com/package/react-cookie">
+                React cookie
+              </a>
+            </Menu.Item>
+            <Menu.Item key="8" icon={<ProjectOutlined />} >
+              <a href="https://redux-toolkit.js.org/tutorials/overview">
+                Redux Toolkit
+              </a>
+            </Menu.Item>
+            <Menu.Item key="9" icon={<ProjectOutlined />} >
+              <a href="https://reactrouter.com/">
+                React router
+              </a>
             </Menu.Item>
           </Menu>
         </Sider>

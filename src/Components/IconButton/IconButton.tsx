@@ -5,7 +5,7 @@ import { Button, Tooltip } from "antd";
 import { WarningOutlined } from '@ant-design/icons';
 
 // Classes
-import classes from "./IconButton.module.less";
+// import classes from "./IconButton.module.less";
 
 const IconButton = (props: IconButtonTypes) => {
   const { tooltip, type, size, icon, onClick, className } = props;

@@ -1,5 +1,12 @@
 # Pomo App
 
+## Overview
+
+In this project my object is create a pomodoro aplication.
+Using strapi as back-end cms and this project as front-end aplication
+
+The system
+
 ## System functionalities
 
 ### User configuration/preference
@@ -35,3 +42,10 @@ History is an array of pomodoros, that includes tasks, dates and others related 
   - [x] - End Date: when pomodoro ends;
   - [x] - Tasks: Worked task list;
 - Date: Date of the first pomodoro
+
+# Planning
+
+![Planing Board](planing.png "Planing Board")
+
+https://docs.strapi.io/developer-docs/latest/development/backend-customization/controllers.html#adding-a-new-controller
+https://docs.strapi.io/developer-docs/latest/development/backend-customization/controllers.html#extending-core-controllers

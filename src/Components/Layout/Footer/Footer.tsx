@@ -1,4 +1,3 @@
-import React from "react";
 // AntDesing
 import { Layout } from "antd"
 // Classes

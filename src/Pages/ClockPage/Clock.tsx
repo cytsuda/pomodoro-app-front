@@ -1,13 +1,16 @@
-import React, { useCallback, useState } from "react";
+import { useCallback, useState } from "react";
 import moment from "moment";
 import produce from "immer";
 
+import axios, { path } from "@/Utils/apiController"
+
 // Redux
 import { useSelector, useDispatch } from 'react-redux';
-import { changeWork } from "@/Redux/timerReducer"
+// import { changeWork } from "@/Redux/timerReducer"
+import { loadTasks } from "@/Redux/taskReducer"
 
 // AntDesign Components & icons
-import { Typography, Row, Col, Card, Timeline } from "antd";
+import { Typography, Row, Col, Card, Timeline, Button } from "antd";
 
 // Custom components
 import TimerComponent from "@/Components/TimerComponent/TimerComponent";
@@ -24,6 +27,11 @@ const getTimeDuration = (value: number) => {
 
 const ClockPage = () => {
   const timer = useSelector((state: RootState) => state.timer);
+  const user = useSelector((state: RootState) => state.user);
+  const tasks = useSelector((state: RootState) => state.task);
+
+  const dispatch = useDispatch();
+
   const [countdown, setCountdow] = useState<TimerType>({
     active: false,
     percent: 0,
@@ -34,6 +42,8 @@ const ClockPage = () => {
 
 
   const countdownChangeHandler = useCallback((value: number | string | undefined) => {
+    console.log("[ClockPage] - countdownChangeHandler - callback");
+    // Add timer.workDuration on the dependence of callback 
     if (value !== undefined) {
       const workDuration = getTimeDuration(timer.workDuration);
       const newValue = typeof value === 'string' ? Number(value) / workDuration : value / workDuration;
@@ -41,17 +51,19 @@ const ClockPage = () => {
         draft.percent = Math.round((1 - newValue) * 100);
       }));
     }
-  }, []);
+  }, [timer.workDuration]);
 
 
   const countdownStartHandler = useCallback(() => {
+    console.log("[ClockPage] - countdownStartHandler - callback");
+    // Add timer.workDuration on the dependence of callback
     setCountdow(
       produce((draft) => {
         draft.active = true;
         draft.timer = Date.now() + getTimeDuration(timer.workDuration);
       })
     );
-  }, []);
+  }, [timer.workDuration]);
 
   const countdownStopHandler = useCallback(() => {
     setCountdow(produce((draft) => {
@@ -61,10 +73,37 @@ const ClockPage = () => {
     }))
   }, []);
 
+  const createNewTaskHandler = async (value: string) => {
+    try {
+      console.log("trying to push")
+      console.log(value)
+      const res = await axios(user.token).post(path.newTask, {
+        data: { title: value }
+      });
+      console.log("SUCCESS");
+      console.log(res);
+    } catch (error) {
+      console.log("FAIL");
+      console.log(error);
+    }
+  };
+
+  // TODO - Remove this latter
+  const getAllTask = async () => {
+    try {
+      const res = await axios(user.token).get(path.getTasks);
+      dispatch(loadTasks(res.data.data));
+
+    } catch (error) {
+      console.log("FAIL");
+      console.log(error);
+    }
+  }
+
   return (
     <div className={classes.main}>
       <Title level={2}>
-        Clock/Working Page
+        Clock/Working Page - <Button type="primary" onClick={getAllTask}>GET ALL</Button>
       </Title>
       <Row gutter={[32, 32]} align="stretch">
         <Col span={6} >
@@ -77,7 +116,7 @@ const ClockPage = () => {
           />
         </Col>
         <Col span={18} >
-          <TaskListComponent />
+          <TaskListComponent refreshHandler={getAllTask} onNewTask={createNewTaskHandler} tasks={tasks} />
         </Col>
         <Col span={6} >
           <Card title="Complete tasks and when">

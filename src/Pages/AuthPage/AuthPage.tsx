@@ -49,7 +49,6 @@ const LoginPage = () => {
   const dispatch = useDispatch();
 
   const onLoginSubmit = async (value: LoginType) => {
-    console.log(value);
     try {
       const res = await axios().post(path.login, {
         identifier: value.identifier,
@@ -64,6 +63,7 @@ const LoginPage = () => {
     } catch (error) {
       // TODO - add bad request
       console.log("Error");
+      console.log(error)
     }
   }
 

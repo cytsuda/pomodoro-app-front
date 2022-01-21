@@ -5,6 +5,8 @@ type RootState = ReturnType<typeof store.getState>
 // Inferred type: {posts: PostsState, comments: CommentsState, users: UsersState}
 type AppDispatch = typeof store.dispatch
 
+declare module 'moment' { export = moment; }
+
 declare module "*.module.less" {
   const classes: { readonly [key: string]: string };
   export default classes;
@@ -28,8 +30,8 @@ type UserType = {
 }
 
 type ControlType = {
-  token: string | null;
-  user: UserType | null;
+  token?: string;
+  user?: UserType;
 }
 
 type PomoType = {
@@ -39,3 +41,25 @@ type PomoType = {
   pomoBeforeLongBreak: number
 }
 
+type TasksType = {
+  data: FetchedTaskType[];
+}
+
+type TaskType = {
+  title: string;
+  note?: string;
+  expectPomo?: number;
+  workedPomo?: number;
+  complete: boolean;
+  sub_tasks?: Array;
+  completeDate?: Date | moment;
+  remind?: Date | moment;
+  createdAt: Date | moment;
+  publishedAt: Date | moment;
+  updatedAt: Date | moment;
+}
+
+type FetchedTaskType = {
+  id: number;
+  attributes: TaskType
+}

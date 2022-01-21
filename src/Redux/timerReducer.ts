@@ -8,7 +8,7 @@ const initialState: PomoType = {
 }
 
 export const timerSlice = createSlice({
-  name: 'counter',
+  name: 'timer',
   initialState,
   reducers: {
     changeWork: (state, action: PayloadAction<number>) => {
