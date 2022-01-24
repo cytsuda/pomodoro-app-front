@@ -12,7 +12,6 @@ import {
 // Reducer
 import { useDispatch } from 'react-redux';
 import { getUser } from "@/Redux/userReducer";
-import { } from "@/Redux/userReducer";
 
 // Cookie
 import { useCookies } from 'react-cookie';

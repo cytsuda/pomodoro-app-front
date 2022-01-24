@@ -10,7 +10,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { getTasks, loadingTask, failTask } from "@/Redux/taskReducer"
 
 // AntDesign Components & icons
-import { Typography, Row, Col, Card, Timeline, Button } from "antd";
+import { Typography, Card, Timeline } from "antd";
 
 // Custom components
 import TimerComponent from "@/Components/TimerComponent/TimerComponent";
@@ -118,8 +118,9 @@ const ClockPage = () => {
       <Title level={2}>
         Clock/Working Page
       </Title>
-      <Row gutter={[32, 32]} align="stretch">
-        <Col span={6} >
+      {/* <Row gutter={[32, 32]} align="stretch"> */}
+      <div className={classes.container}>
+        <div className={classes.small}>
           <TimerComponent
             defaultValue={statisticValue}
             countdown={countdown}
@@ -127,15 +128,9 @@ const ClockPage = () => {
             onStop={countdownStopHandler}
             countOnChange={countdownChangeHandler}
           />
-        </Col>
-        <Col span={18} >
-          <TaskListComponent
-            refreshHandler={getAllTask}
-            onNewTask={createNewTaskHandler}
-            tasks={tasks}
-          />
-        </Col>
-        <Col span={6} >
+        </div>
+
+        <div className={classes.small}>
           <Card title="Complete tasks and when">
             <Timeline mode="left">
               <Timeline.Item>
@@ -148,9 +143,15 @@ const ClockPage = () => {
               <Timeline.Item>Network problems being solved</Timeline.Item>
             </Timeline>
           </Card>
-        </Col>
-      </Row>
-
+        </div>
+        <div className={classes.big}>
+          <TaskListComponent
+            refreshHandler={getAllTask}
+            onNewTask={createNewTaskHandler}
+            tasks={tasks}
+          />
+        </div>
+      </div >
     </div >
   );
 }
