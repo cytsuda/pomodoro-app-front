@@ -1,8 +1,11 @@
 import React from "react";
 
-// antdesign components
+// Redux
+import { useSelector } from "react-redux";
+
+// Ant Design components
 import { Menu, Avatar, Dropdown, Typography, Layout } from "antd";
-import { UserOutlined } from '@ant-design/icons';
+import { UserOutlined, SettingOutlined, LogoutOutlined, DashboardOutlined } from '@ant-design/icons';
 
 // class
 import classes from "./Header.module.less";
@@ -17,23 +20,33 @@ type HeaderComponentType = {
 
 const HeaderComponent = (props: HeaderComponentType) => {
   const { logout } = props;
+  const user = useSelector((state: RootState) => state.user.user);
+  console.log("HeaderComponent - [USER]");
+  console.log(user);
+
   const AvatarMenu = <Menu
     theme="light"
-    mode="horizontal"
+    mode="vertical"
     style={{ lineHeight: "inherit" }}
 
   >
-    <Menu.Item>
+    <Menu.Item key="1" icon={<UserOutlined />}>
       <a target="_blank" rel="noopener noreferrer" href="https://www.antgroup.com">
-        1st menu item
+        Profile
       </a>
     </Menu.Item>
-    <Menu.Item>
+    <Menu.Item key="2" icon={<DashboardOutlined />}>
       <a target="_blank" rel="noopener noreferrer" href="https://www.aliyun.com">
-        2nd menu item
+        Preferences
       </a>
     </Menu.Item>
-    <Menu.Item onClick={logout}>
+    <Menu.Item key="3" icon={<SettingOutlined />}>
+      <a target="_blank" rel="noopener noreferrer" href="https://www.aliyun.com">
+        Settings
+      </a>
+    </Menu.Item>
+    <Menu.Divider />
+    <Menu.Item key="logout" icon={<LogoutOutlined />} onClick={logout}>
       Logout
     </Menu.Item>
   </Menu>
@@ -47,7 +60,10 @@ const HeaderComponent = (props: HeaderComponentType) => {
       </div>
       <div className={classes.control}>
         <Dropdown overlay={AvatarMenu} placement="bottomRight">
-          <Avatar icon={<UserOutlined />} size="small" />
+          <div className={classes.controlAvatar}>
+            <Avatar icon={<UserOutlined />} size="small" />
+            <Text>{user ? user.username : "Loading"}</Text>
+          </div>
         </Dropdown>
       </div>
     </Header>
@@ -55,13 +71,3 @@ const HeaderComponent = (props: HeaderComponentType) => {
 }
 
 export default HeaderComponent;
-/*
-      <Header className={classes.top}>
-        <div className="logo" />
-        <Menu theme="light" mode="horizontal" defaultSelectedKeys={['2']}>
-          <Menu.Item key="1">nav 1</Menu.Item>
-          <Menu.Item key="2">nav 2</Menu.Item>
-          <Menu.Item key="3">nav 3</Menu.Item>
-        </Menu>
-      </Header>
-*/

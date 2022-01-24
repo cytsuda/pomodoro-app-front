@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+import { useEffect, useState, useCallback } from "react";
+import axios, { path } from "@/Utils/apiController";
+// Ant Desing
 import { Outlet, Link, Navigate, useLocation } from "react-router-dom";
 import { Layout, Menu } from 'antd';
 import {
@@ -9,7 +11,7 @@ import {
 
 // Reducer
 import { useDispatch } from 'react-redux';
-import { getToken } from "@/Redux/userReducer";
+import { getUser } from "@/Redux/userReducer";
 // Cookie
 import { useCookies } from 'react-cookie';
 
@@ -31,14 +33,25 @@ const LayoutPage = () => {
 
   const [collapse, setCollapse] = useState<boolean>(false);
 
+
+  const loadUserHandler = useCallback(async (token: string) => {
+    const response = await axios(token).get(path.me);
+    dispatch(getUser({
+      token: token,
+      user: response.data
+    }));
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (cookie.token) {
+      loadUserHandler(cookie.token);
+    }
+  }, [cookie.token, loadUserHandler]);
+
+
   if (!cookie.token) {
     return <Navigate to="/login" state={{ from: location }} replace />
   }
-
-  dispatch(getToken({
-    token: cookie.token
-  }));
-
   return (
     <Layout className={classes.main}>
       <HeaderComponent logout={() => removeCookie("token", { path: "/" })} />

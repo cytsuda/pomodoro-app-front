@@ -18,9 +18,11 @@ const getTaskQuery = qs.stringify({
 export const path = {
   register: 'api/auth/local/register',
   login: 'api/auth/local',
+  me: "api/users/me",
   newTask: "api/tasks",
   getTasks: `api/tasks?${getTaskQuery}`,
   updateTask: `api/tasks/`
+
 
 }
 

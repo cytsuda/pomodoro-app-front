@@ -27,6 +27,7 @@ type UserType = {
   provider: string;
   updatedAt: Date;
   username: string;
+  pomoConfig?: PomoType;
 }
 
 type ControlType = {
