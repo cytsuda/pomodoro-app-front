@@ -3,12 +3,13 @@ import clsx from "clsx";
 import axios, { path } from "@/Utils/apiController";
 
 // Redux
-import { useSelector } from "react-redux";
-
+import { useSelector, useDispatch } from "react-redux";
+import { getTasks, loadingTask, failTask } from "@/Redux/taskReducer";
 
 // AntDesign
-import { Checkbox, Button, Tooltip } from "antd"
-import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Checkbox, Button, Tooltip, Popconfirm } from "antd"
+import { CheckboxChangeEvent } from "antd/lib/checkbox";
+import { EditFilled, DeleteFilled } from '@ant-design/icons';
 
 // Custom Components
 import TaskEditor from "@/Components/TaskEditor/TaskEditor";
@@ -24,46 +25,43 @@ type TaskItemPropType = {
 const TaskItem = (props: TaskItemPropType) => {
   const { data, id } = props;
   const [select, setSelect] = useState(false);
+  const dispatch = useDispatch();
 
   const user = useSelector((state: RootState) => state.user);
 
-  const [isModalVisible, setIsModalVisible] = useState(false);
-
-  const showModal = () => {
-    setIsModalVisible(true);
-  };
-
-  const handleOk = async (value: any) => {
-    const form = value.getFieldsValue();
-    const updateTask = {
-      title: form.title || data.title,
-      complete: form.complete,
-      expectPomo: form.expectPomo,
-      note: form.note,
-      remind: form.remind ? form.remind.toISOString() : null
-
-    }
+  const handleDelete = async () => {
+    dispatch(loadingTask());
     try {
-      const response = await axios(user.token).put(path.updateTask + id, {
-        data: { ...updateTask }
-      });
-      console.log(response);
-      setIsModalVisible(false);
+      await axios(user.token).delete(path.updateTask + id);
+      const res = await axios(user.token).get(path.getTasks);
+      dispatch(getTasks(res.data.data));
     } catch (error) {
-      console.log("TaskItem Error");
+      console.error("[Quick Delete] Error");
       console.log(error);
-      setIsModalVisible(false);
+      dispatch(failTask());
     }
-  };
+  }
 
-  const handleCancel = () => {
-    setIsModalVisible(false);
-  };
+  const handleCheck = async (e: CheckboxChangeEvent) => {
+    dispatch(loadingTask());
+    try {
+      await axios(user.token).put(path.updateTask + id, {
+        data: { complete: e.target.checked }
+      });
+      const res = await axios(user.token).get(path.getTasks);
+      dispatch(getTasks(res.data.data));
+    } catch (error) {
+      console.error("[Quick Delete] Error");
+      console.log(error);
+      dispatch(failTask());
+    }
+  }
+
 
   return (
     <div className={clsx(classes.container, select && classes.active)}>
-      <div className={classes.todo} onClick={() => setSelect(prev => !prev)}>
-        <Checkbox checked={data.complete}>
+      <div className={classes.todo} >
+        <Checkbox checked={data.complete} onChange={handleCheck}>
           <span className={clsx(classes.checkbox, data.complete && classes.checked)}>{data.title}</span>
         </Checkbox>
 
@@ -75,26 +73,26 @@ const TaskItem = (props: TaskItemPropType) => {
           </Tooltip>
         ) : null}
       </div>
-      <div className={classes.icons}>
+      {/* TODO - when click on edit the select (setSelect is trigger) change */}
+      <div className={classes.icons} onClick={() => setSelect(prev => !prev)}>
         <div className={classes.iconsInner}>
-          <Tooltip title="Edit">
-            <Button
-              shape="circle"
-              icon={<EditOutlined />}
-              size="small"
-              onClick={showModal}
-            />
-          </Tooltip>
+          <TaskEditor id={id} data={data} />
           <Tooltip title="Delete">
-            <Button
-              shape="circle"
-              icon={<DeleteOutlined />}
-              size="small"
-            />
+            <div onClick={() => setSelect(true)}>
+              <Popconfirm
+                title="Are you sure to delete this task?"
+                onConfirm={handleDelete}
+              >
+                <Button
+                  shape="circle"
+                  icon={<DeleteFilled />}
+                  size="small"
+                />
+              </Popconfirm>
+            </div>
           </Tooltip>
         </div>
       </div>
-      <TaskEditor id={id} data={data} visible={isModalVisible} onOk={handleOk} onCancel={handleCancel} />
     </div >
   );
 }

@@ -21,8 +21,6 @@ type HeaderComponentType = {
 const HeaderComponent = (props: HeaderComponentType) => {
   const { logout } = props;
   const user = useSelector((state: RootState) => state.user.user);
-  console.log("HeaderComponent - [USER]");
-  console.log(user);
 
   const AvatarMenu = <Menu
     theme="light"

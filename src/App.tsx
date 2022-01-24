@@ -9,16 +9,18 @@ import AuthPage from "@/Pages/AuthPage/AuthPage";
 import NotFoundPage from "@/Pages/NotFoundPage/NotFoundPage";
 
 function App() {
+
+
   return (
     <Routes>
       {/* Rotas protegidas */}
       <Route path="/" element={<Layout />}>
-        <Route path="" element={<ClockPage />} />
+        <Route index element={<ClockPage />} />
         {/* TODO - add project/:id page, show tasks*/}
         {/* TODO - add project/task/:id page */}
+        <Route path="*" element={<NotFoundPage />} />
       </Route>
       <Route path="/login" element={<AuthPage />} />
-      <Route element={<NotFoundPage />} />
     </Routes>
   );
 }

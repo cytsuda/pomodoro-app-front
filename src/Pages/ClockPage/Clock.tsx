@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect } from "react";
 import moment from "moment";
 import produce from "immer";
 
@@ -7,7 +7,7 @@ import axios, { path } from "@/Utils/apiController"
 // Redux
 import { useSelector, useDispatch } from 'react-redux';
 // import { changeWork } from "@/Redux/timerReducer"
-import { loadTasks } from "@/Redux/taskReducer"
+import { getTasks, loadingTask, failTask } from "@/Redux/taskReducer"
 
 // AntDesign Components & icons
 import { Typography, Row, Col, Card, Timeline, Button } from "antd";
@@ -37,6 +37,7 @@ const ClockPage = () => {
     percent: 0,
     timer: 0
   });
+
 
   const statisticValue = moment(getTimeDuration(timer.workDuration)).format("mm:ss");
 
@@ -74,36 +75,48 @@ const ClockPage = () => {
   }, []);
 
   const createNewTaskHandler = async (value: string) => {
+    dispatch(loadingTask());
     try {
       console.log("trying to push")
       console.log(value)
-      const res = await axios(user.token).post(path.newTask, {
+      const response = await axios(user.token).post(path.newTask, {
         data: { title: value }
       });
       console.log("SUCCESS");
-      console.log(res);
+      console.log(response);
+      const res = await axios(user.token).get(path.getTasks);
+      dispatch(getTasks(res.data.data));
     } catch (error) {
       console.log("FAIL");
       console.log(error);
+      dispatch(failTask());
     }
   };
 
-  // TODO - Remove this latter
-  const getAllTask = async () => {
+  const getAllTask = useCallback(async () => {
+    dispatch(loadingTask());
+    console.log("getAllTask")
     try {
       const res = await axios(user.token).get(path.getTasks);
-      dispatch(loadTasks(res.data.data));
+      dispatch(getTasks(res.data.data));
 
     } catch (error) {
-      console.log("FAIL");
+      console.error("[GET ALL TASK] - Fail");
       console.log(error);
+      dispatch(failTask());
     }
-  }
+  }, [dispatch, user.token]);
+
+  useEffect(() => {
+    if (user && user.token) {
+      getAllTask();
+    }
+  }, [getAllTask, user]);
 
   return (
     <div className={classes.main}>
       <Title level={2}>
-        Clock/Working Page - <Button type="primary" onClick={getAllTask}>GET ALL</Button>
+        Clock/Working Page
       </Title>
       <Row gutter={[32, 32]} align="stretch">
         <Col span={6} >
@@ -116,7 +129,11 @@ const ClockPage = () => {
           />
         </Col>
         <Col span={18} >
-          <TaskListComponent refreshHandler={getAllTask} onNewTask={createNewTaskHandler} tasks={tasks} />
+          <TaskListComponent
+            refreshHandler={getAllTask}
+            onNewTask={createNewTaskHandler}
+            tasks={tasks}
+          />
         </Col>
         <Col span={6} >
           <Card title="Complete tasks and when">

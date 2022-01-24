@@ -12,6 +12,8 @@ import {
 // Reducer
 import { useDispatch } from 'react-redux';
 import { getUser } from "@/Redux/userReducer";
+import { } from "@/Redux/userReducer";
+
 // Cookie
 import { useCookies } from 'react-cookie';
 
@@ -57,7 +59,6 @@ const LayoutPage = () => {
       <HeaderComponent logout={() => removeCookie("token", { path: "/" })} />
       <Layout >
         <Sider
-          className={classes.sider}
           collapsed={collapse}
           collapsible
           onCollapse={() => setCollapse(prev => !prev)}

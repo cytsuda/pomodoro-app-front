@@ -1,6 +1,9 @@
 import React, { useState, useRef } from "react";
 import clsx from "clsx";
 
+// Redux
+import { useSelector } from "react-redux";
+
 // Ant Design
 import { Typography, Button, Input } from "antd";
 import { SyncOutlined } from '@ant-design/icons';
@@ -25,8 +28,10 @@ const TaskListComponent = (props: TaskListTypes) => {
 
   const [taskTitle, setTaskTitle] = useState('');
   const [focus, setFocus] = useState(false);
-  const inputRef = useRef<Input>(null);
 
+  const task = useSelector((state: RootState) => state.task)
+
+  const inputRef = useRef<Input>(null);
   const handleTaskTitle = (e: React.FormEvent<HTMLInputElement>) => {
     const target = e.currentTarget as HTMLInputElement;
     setTaskTitle(target.value);
@@ -35,7 +40,7 @@ const TaskListComponent = (props: TaskListTypes) => {
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       console.log("Send task title to add");
-      onNewTask(taskTitle)
+      onNewTask(taskTitle);
       setTaskTitle("");
       setFocus(false);
       if (inputRef.current) {
@@ -49,7 +54,7 @@ const TaskListComponent = (props: TaskListTypes) => {
       inputRef.current.focus();
     } else {
       console.log("Send task title to add");
-      onNewTask(taskTitle)
+      onNewTask(taskTitle);
       setTaskTitle("");
       setFocus(false);
       if (inputRef.current) {
@@ -64,9 +69,8 @@ const TaskListComponent = (props: TaskListTypes) => {
         <Title level={5}>
           List of tasks {tasks && "- " + tasks.data.length + " tasks"}
         </Title>
-        {/* TODO - add a spin*/}
         <div className={classes.refresh}>
-          <Button shape="circle" icon={<SyncOutlined />} onClick={refreshHandler} />
+          <Button shape="circle" icon={<SyncOutlined spin={task.loading} />} onClick={refreshHandler} />
         </div>
         <div className={classes.task}
           onFocus={() => setFocus(true)}

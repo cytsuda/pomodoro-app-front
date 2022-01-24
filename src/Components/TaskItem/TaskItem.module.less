@@ -9,6 +9,7 @@
       width: 80px;
       margin-left: 8px;
       border-color: @border-color-split;
+      box-shadow: inset 0 0 1rem @border-color-split;
       border-radius: 4px;
     }
   }
@@ -32,7 +33,7 @@
 
 .checkbox {
   &.checked {
-    text-decoration: line-through;
+    color: @primary-color;
   }
 }
 
@@ -52,6 +53,7 @@
   margin-left: 4px;
   transition: all 0.2s ease-in-out;
   width: 6px;
+  cursor: pointer;
   &Inner {
     height: 100%;
     display: flex;

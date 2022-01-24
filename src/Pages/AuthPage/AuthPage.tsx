@@ -61,7 +61,7 @@ const LoginPage = () => {
       }));
       setCookie("token", jwt, { path: "/", secure: true });
     } catch (error) {
-      // TODO - add bad request
+      // TODO - add bad request - pop error
       console.log("Error");
       console.log(error)
     }
@@ -83,7 +83,7 @@ const LoginPage = () => {
       }));
       setCookie("token", jwt, { path: "/", secure: true });
     } catch (error) {
-      // TODO - add bad request handler
+      // TODO - add bad request handler - pop error
       console.log("Error")
       console.log(error)
     }

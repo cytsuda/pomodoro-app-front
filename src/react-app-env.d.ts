@@ -43,6 +43,7 @@ type PomoType = {
 }
 
 type TasksType = {
+  loading: boolean;
   data: FetchedTaskType[];
 }
 

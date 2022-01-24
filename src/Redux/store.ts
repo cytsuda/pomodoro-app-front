@@ -7,6 +7,6 @@ export const store = configureStore({
   reducer: {
     task: taskReducer,
     timer: timerReducer,
-    user: userReducer
+    user: userReducer,
   },
 })
