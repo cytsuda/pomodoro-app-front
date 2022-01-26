@@ -1,4 +1,3 @@
-import { useState } from "react";
 import clsx from "clsx";
 import axios, { path } from "@/Utils/apiController";
 
@@ -9,7 +8,7 @@ import { getTasks, loadingTask, failTask } from "@/Redux/taskReducer";
 // AntDesign
 import { Checkbox, Button, Tooltip, Popconfirm } from "antd"
 import { CheckboxChangeEvent } from "antd/lib/checkbox";
-import { EditFilled, DeleteFilled } from '@ant-design/icons';
+import { DeleteFilled } from '@ant-design/icons';
 
 // Custom Components
 import TaskEditor from "@/Components/TaskEditor/TaskEditor";
@@ -24,7 +23,6 @@ type TaskItemPropType = {
 
 const TaskItem = (props: TaskItemPropType) => {
   const { data, id } = props;
-  const [select, setSelect] = useState(false);
   const dispatch = useDispatch();
 
   const user = useSelector((state: RootState) => state.user);
@@ -59,7 +57,7 @@ const TaskItem = (props: TaskItemPropType) => {
 
 
   return (
-    <div className={clsx(classes.container, select && classes.active)}>
+    <div className={classes.container}>
       <div className={classes.todo} >
         <Checkbox checked={data.complete} onChange={handleCheck}>
           <span className={clsx(classes.checkbox, data.complete && classes.checked)}>{data.title}</span>
@@ -73,25 +71,20 @@ const TaskItem = (props: TaskItemPropType) => {
           </Tooltip>
         ) : null}
       </div>
-      {/* TODO - when click on edit the select (setSelect is trigger) change */}
-      <div className={classes.icons} onClick={() => setSelect(prev => !prev)}>
-        <div className={classes.iconsInner}>
-          <TaskEditor id={id} data={data} />
-          <Tooltip title="Delete">
-            <div onClick={() => setSelect(true)}>
-              <Popconfirm
-                title="Are you sure to delete this task?"
-                onConfirm={handleDelete}
-              >
-                <Button
-                  shape="circle"
-                  icon={<DeleteFilled />}
-                  size="small"
-                />
-              </Popconfirm>
-            </div>
-          </Tooltip>
-        </div>
+      <div className={classes.icons} >
+        <TaskEditor id={id} data={data} />
+        <Tooltip title="Delete">
+          <Popconfirm
+            title="Are you sure to delete this task?"
+            onConfirm={handleDelete}
+          >
+            <Button
+              shape="circle"
+              icon={<DeleteFilled />}
+              size="small"
+            />
+          </Popconfirm>
+        </Tooltip>
       </div>
     </div >
   );

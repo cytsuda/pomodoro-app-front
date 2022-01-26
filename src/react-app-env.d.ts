@@ -12,12 +12,10 @@ declare module "*.module.less" {
   export default classes;
 }
 
-type TimerType = {
-  active: boolean,
-  percent: number,
-  timer: number | string | undefined
+type ControlType = {
+  token?: string;
+  user?: UserType;
 }
-
 type UserType = {
   blocked: boolean;
   confirmed: boolean;
@@ -27,19 +25,40 @@ type UserType = {
   provider: string;
   updatedAt: Date;
   username: string;
-  pomoConfig?: PomoType;
+  pomoConfig: PomoConfigType | undefined;
 }
 
-type ControlType = {
-  token?: string;
-  user?: UserType;
+// Timer, Countodown & Pomoconfig
+type CountdownType = {
+  active: boolean;
+  percent: number;
+  timer: number | string | undefined;
+  pomo: PomoType | undefined;
 }
 
-type PomoType = {
+type PomoConfigType = {
   workDuration: number,
   shortBreakDuration: number,
   longBreakDuration: number,
-  pomoBeforeLongBreak: number
+  pomoBeforeLongBreak: number,
+}
+
+
+type PomoControlType = {
+  pomos: PomoType[];
+  loading: boolean;
+}
+
+type PomoType = {
+  id: string,
+  attributes: {
+    start: Date,
+    end: Date,
+    tasks: FetchedTaskType[],
+    status: "running" | "completed" | "canceled" | "pause",
+    remain: number,
+    type: "work" | "short_break" | "long_break"
+  }
 }
 
 type TasksType = {

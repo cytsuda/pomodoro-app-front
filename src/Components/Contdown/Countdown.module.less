@@ -1,0 +1,25 @@
+@import "~antd/lib/style/themes/dark.less";
+
+.timer {
+  display: flex;
+  flex-direction: column;
+  padding: 32px 0 16px;
+  grid-gap: 16px;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid @border-color-split;
+  &Icon {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+  }
+  &Btn {
+    min-width: 50%;
+    max-width: 90%;
+  }
+}
+.specialBtn {
+  cursor: pointer;
+  user-select: none;
+}

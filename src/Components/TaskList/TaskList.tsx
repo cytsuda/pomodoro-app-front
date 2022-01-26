@@ -1,8 +1,11 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useCallback, useEffect } from "react";
 import clsx from "clsx";
+// Axios
+import axios, { path } from "@/Utils/apiController";
 
 // Redux
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { getTasks, loadingTask, failTask } from "@/Redux/taskReducer"
 
 // Ant Design
 import { Typography, Button, Input } from "antd";
@@ -14,24 +17,25 @@ import classes from "./TaskList.module.less";
 // Custom Components
 import TaskItem from "@/Components/TaskItem/TaskItem";
 
-interface TaskListTypes {
-  onNewTask: (value: string) => void;
-  refreshHandler: () => void;
-  tasks?: TasksType;
-}
+// interface TaskListTypes {
+// }
 
 // Desconstructor
 const { Title } = Typography
 
-const TaskListComponent = (props: TaskListTypes) => {
-  const { onNewTask, refreshHandler, tasks } = props;
-
+// Component
+const TaskListComponent = () => {
+  // Redux
+  const tasks = useSelector((state: RootState) => state.task);
+  const user = useSelector((state: RootState) => state.user);
+  const dispatch = useDispatch();
+  // Local States - [ ] - possible change or remove 
   const [taskTitle, setTaskTitle] = useState('');
   const [focus, setFocus] = useState(false);
-
-  const task = useSelector((state: RootState) => state.task)
-
+  // Ref
   const inputRef = useRef<Input>(null);
+
+  // Functions
   const handleTaskTitle = (e: React.FormEvent<HTMLInputElement>) => {
     const target = e.currentTarget as HTMLInputElement;
     setTaskTitle(target.value);
@@ -40,7 +44,7 @@ const TaskListComponent = (props: TaskListTypes) => {
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       console.log("Send task title to add");
-      onNewTask(taskTitle);
+      createNewTask(taskTitle);
       setTaskTitle("");
       setFocus(false);
       if (inputRef.current) {
@@ -54,7 +58,7 @@ const TaskListComponent = (props: TaskListTypes) => {
       inputRef.current.focus();
     } else {
       console.log("Send task title to add");
-      onNewTask(taskTitle);
+      createNewTask(taskTitle);
       setTaskTitle("");
       setFocus(false);
       if (inputRef.current) {
@@ -63,6 +67,47 @@ const TaskListComponent = (props: TaskListTypes) => {
     }
   }
 
+  const createNewTask = async (text: string) => {
+    dispatch(loadingTask());
+    try {
+      console.log("trying to push")
+      console.log(text)
+      const response = await axios(user.token).post(path.newTask, {
+        data: { title: text }
+      });
+      console.log("SUCCESS");
+      console.log(response);
+      const res = await axios(user.token).get(path.getTasks);
+      dispatch(getTasks(res.data.data));
+    } catch (error) {
+      console.log("FAIL");
+      console.log(error);
+      dispatch(failTask());
+    }
+  }
+
+  const getAllTask = useCallback(async () => {
+    dispatch(loadingTask());
+    console.log("getAllTask")
+    try {
+      const res = await axios(user.token).get(path.getTasks);
+      dispatch(getTasks(res.data.data));
+
+    } catch (error) {
+      console.error("[GET ALL TASK] - Fail");
+      console.log(error);
+      dispatch(failTask());
+    }
+  }, [dispatch, user.token]);
+
+
+  useEffect(() => {
+    if (user && user.token) {
+      getAllTask();
+    }
+  }, [getAllTask, user]);
+
+
   return (
     <div className={classes.container} >
       <div className={classes.top}>
@@ -70,7 +115,7 @@ const TaskListComponent = (props: TaskListTypes) => {
           List of tasks {tasks && "- " + tasks.data.length + " tasks"}
         </Title>
         <div className={classes.refresh}>
-          <Button shape="circle" icon={<SyncOutlined spin={task.loading} />} onClick={refreshHandler} />
+          <Button shape="circle" icon={<SyncOutlined spin={tasks.loading} />} onClick={getAllTask} />
         </div>
         <div className={classes.task}
           onFocus={() => setFocus(true)}

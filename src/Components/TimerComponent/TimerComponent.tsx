@@ -1,99 +1,57 @@
-import React from "react";
+// React
+
+// Axios
+
+// Redux
+import { useSelector, } from "react-redux";
+// import {  } from "@/Redux/timerReducer"
 
 // AntD
-import { Card, Progress, Statistic, Button } from "antd"
-import { SettingOutlined } from '@ant-design/icons';
+import { Card } from "antd"
 
 // Custom Components
-import IconButton from "@/Components/IconButton/IconButton";
-
+import CountdownComponent from "@/Components/Contdown/Countdown";
 // Classes
 import classes from "./TimerComponent.module.less";
 
+
 // Deconstructors
-const { Countdown } = Statistic;
 const { Meta } = Card;
 
-interface TimerComponentProps {
-  defaultValue: string,
-  countdown: TimerType,
-  onStart: () => void,
-  onStop: () => void,
-  countOnChange: (v?: number | string) => void
-}
-const TimerComponent = (props: TimerComponentProps) => {
-  const { defaultValue, countdown, onStart, onStop, countOnChange } = props;
+// interface TimerComponentProps {
+// }
+const TimerComponent = () => {
 
-  const formatHandler = () => {
-    if (countdown.active) {
-      return <Countdown
-        value={countdown.active ? countdown.timer : 0}
-        onChange={countOnChange}
-        format={"mm:ss"}
-      />
-    }
-    return defaultValue
+  // const timer = useSelector((state: RootState) => state.timer);
+  const user = useSelector((state: RootState) => state.user);
+
+  let pomoConfig: PomoConfigType = {
+    longBreakDuration: 15,
+    shortBreakDuration: 5,
+    workDuration: 25,
+    pomoBeforeLongBreak: 4,
+  }
+  if (user.user) {
+    pomoConfig = user.user.pomoConfig;
   }
 
-  const IconBtn = <IconButton
-    className={classes.timerIcon}
-    tooltip="Setting"
-    size="small"
-    onClick={() => console.log("Open modal to change settings")}
-    icon={<SettingOutlined />}
-  />
   return (
     <Card
       className={classes.container}
-      cover={
-        <div className={classes.timer}>
-          {IconBtn}
-          <Progress
-            type="circle"
-            percent={countdown.percent}
-            format={formatHandler}
-          />
-          <ButtonSelector
-            active={countdown.active}
-            onStart={onStart}
-            onStop={onStop}
-          />
-        </div>
-      }
+      cover={<CountdownComponent user={user} type="work" />}
     >
       <Meta
         title="Card title"
         description="This is the description"
       />
+      <>
+        <p>Work Duration: {pomoConfig.workDuration}</p>
+        <p>Short Break: {pomoConfig.shortBreakDuration}</p>
+        <p>Long Break: {pomoConfig.longBreakDuration}</p>
+        <p>Pomo Before Long Break: {pomoConfig.pomoBeforeLongBreak}</p>
+      </>
     </Card >
   );
 }
 
 export default TimerComponent
-
-const ButtonSelector = (props: { active: boolean, onStart: () => void, onStop: () => void }) => {
-  const { active, onStart, onStop } = props;
-  if (active) {
-    return (
-      <Button
-        className={classes.timerBtn}
-        shape="round" size="large"
-        ghost danger
-        onClick={onStop}
-      >
-        Stop
-      </Button>
-    );
-  } else {
-    return (
-      <Button
-        className={classes.timerBtn}
-        shape="round" size="large"
-        type="primary"
-        onClick={onStart}
-      >
-        Start
-      </Button>
-    );
-  }
-}
