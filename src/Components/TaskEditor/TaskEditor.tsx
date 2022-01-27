@@ -1,7 +1,7 @@
 import { useState } from "react";
 import moment from "moment";
 import produce from "immer";
-import axios, { path } from "@/Utils/apiController";
+import axios, { path as p, query as q } from "@/Utils/apiController";
 
 // Redux
 import { useSelector, useDispatch } from "react-redux";
@@ -57,10 +57,10 @@ const TaskEditor = (props: TaskEditorPropType) => {
       remind: form.remind ? form.remind.toISOString() : null
     }
     try {
-      await axios(token).put(path.updateTask + id, {
+      await axios(token).put(p.apiTasks + q.queryID(id), {
         data: { ...updateTask }
       });
-      const res = await axios(token).get(path.getTasks);
+      const res = await axios(token).get(p.apiTasks + "?" + q.queryPopulateSubTasks);
       dispatch(getTasks(res.data.data));
       setOpen(false);
     } catch (error) {

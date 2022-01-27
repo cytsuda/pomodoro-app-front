@@ -17,37 +17,31 @@ export const timerSlice = createSlice({
   reducers: {
 
     // Countdown Section
-    countdownChange: (state, action: PayloadAction<number>) => {
+    percentChange: (state, action: PayloadAction<number>) => {
       state.percent = action.payload;
     },
-    countdownStart: (state, action: PayloadAction<CountdownStart>) => {
-      console.log("[SET COUNTDOWN] - START");
-      console.log(action.payload.pomo);
-      console.log("[SET COUNTDOWN] - END");
+    timerStart: (state, action: PayloadAction<CountdownStart>) => {
       state.active = true;
       state.timer = action.payload.timer;
       state.pomo = action.payload.pomo;
     },
-    countdownStop: (state) => {
+    timerCancel: (state) => {
       state.active = false;
       console.log("Contdown stop need to send cancel request to backend")
     },
-    countdownSet: (state, action: PayloadAction<CountdownType | undefined | null>) => {
-      if (action.payload) {
-        state = action.payload;
-      } else {
-        state = initialState;
-      }
+    timerFinish: () => {
+      return initialState;
     }
+
   },
 })
 
 // Action creators are generated for each case reducer function
 export const {
-  countdownChange,
-  countdownStart,
-  countdownStop,
-  countdownSet
+  percentChange,
+  timerStart,
+  timerCancel,
+  timerFinish,
 } = timerSlice.actions
 
 export default timerSlice.reducer

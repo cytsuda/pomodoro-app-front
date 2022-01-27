@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import axios, { path } from "@/Utils/apiController";
+import axios, { path as p } from "@/Utils/apiController";
 // Ant Desing
 import { Outlet, Link, Navigate, useLocation } from "react-router-dom";
 import { Layout, Menu } from 'antd';
@@ -11,7 +11,7 @@ import {
 
 // Reducer
 import { useDispatch } from 'react-redux';
-import { getUser } from "@/Redux/userReducer";
+import { getUser, setPomoConfig } from "@/Redux/userReducer";
 
 // Cookie
 import { useCookies } from 'react-cookie';
@@ -36,11 +36,21 @@ const LayoutPage = () => {
 
 
   const loadUserHandler = useCallback(async (token: string) => {
-    const response = await axios(token).get(path.me);
+    // TODO - create a first step configuration data
+    const response = await axios(token).get(p.apiMe);
     dispatch(getUser({
       token: token,
       user: response.data
     }));
+    try {
+      const userConfig = await axios(token).get(p.apiUserConfig);
+      if (userConfig.data.pomoConfig) {
+        dispatch(setPomoConfig(userConfig.data.pomoConfig));
+      }
+    } catch (error) {
+      console.log("LoadUSerHandler - error");
+      console.log(error)
+    }
   }, [dispatch]);
 
   useEffect(() => {

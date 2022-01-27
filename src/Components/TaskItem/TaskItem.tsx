@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import axios, { path } from "@/Utils/apiController";
+import axios, { path as p, query as q } from "@/Utils/apiController";
 
 // Redux
 import { useSelector, useDispatch } from "react-redux";
@@ -30,8 +30,8 @@ const TaskItem = (props: TaskItemPropType) => {
   const handleDelete = async () => {
     dispatch(loadingTask());
     try {
-      await axios(user.token).delete(path.updateTask + id);
-      const res = await axios(user.token).get(path.getTasks);
+      await axios(user.token).delete(p.apiTasks + q.queryID(id));
+      const res = await axios(user.token).get(p.apiTasks + "?" + q.queryPopulateSubTasks);
       dispatch(getTasks(res.data.data));
     } catch (error) {
       console.error("[Quick Delete] Error");
@@ -43,10 +43,10 @@ const TaskItem = (props: TaskItemPropType) => {
   const handleCheck = async (e: CheckboxChangeEvent) => {
     dispatch(loadingTask());
     try {
-      await axios(user.token).put(path.updateTask + id, {
+      await axios(user.token).put(p.apiTasks + q.queryID(id), {
         data: { complete: e.target.checked }
       });
-      const res = await axios(user.token).get(path.getTasks);
+      const res = await axios(user.token).get(p.apiTasks + "?" + q.queryPopulateSubTasks);
       dispatch(getTasks(res.data.data));
     } catch (error) {
       console.error("[Quick Delete] Error");

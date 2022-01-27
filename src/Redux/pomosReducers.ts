@@ -9,7 +9,7 @@ export const pomoSlicer = createSlice({
   name: 'pomo',
   initialState,
   reducers: {
-    getPomos: (state, action: PayloadAction<PomoType[] | undefined>) => {
+    setPomos: (state, action: PayloadAction<PomoType[] | undefined>) => {
       if (action.payload) {
         state.pomos = action.payload;
       } else {
@@ -20,7 +20,8 @@ export const pomoSlicer = createSlice({
 })
 
 // Action creators are generated for each case reducer function
-export const { getPomos
+export const {
+  setPomos
 } = pomoSlicer.actions
 
 export default pomoSlicer.reducer

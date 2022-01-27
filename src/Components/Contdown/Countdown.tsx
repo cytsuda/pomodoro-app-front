@@ -1,13 +1,13 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import moment from "moment";
 
 // Axios
-import axios, { path } from "@/Utils/apiController";
+import axios, { path as p, query as q } from "@/Utils/apiController";
 
 // Redux
 import { useSelector, useDispatch } from "react-redux";
-import { countdownChange, countdownStart, countdownStop } from "@/Redux/timerReducer"
+import { percentChange, timerStart, timerFinish } from "@/Redux/timerReducer"
 
 // Ant Design
 import { Button, Progress, Statistic, Typography } from "antd"
@@ -18,6 +18,7 @@ import IconButton from "@/Components/IconButton/IconButton";
 
 // Classes & Styles
 import classes from "./Countdown.module.less";
+import { workerData } from 'worker_threads';
 
 // Desconstructor
 const { Countdown } = Statistic;
@@ -26,67 +27,54 @@ const { Text } = Typography;
 // Type
 type Props = {
   user: ControlType;
-  type: "work" | "short_break" | "long_break"
+  numPomos: number;
 };
 
-const initiPomoConfig = {
-  longBreakDuration: 15,
-  shortBreakDuration: 5,
-  workDuration: 25
-}
-function CountdownComponent({ user, type }: Props) {
+type StateType = "work" | "short_break" | "long_break"
+
+function CountdownComponent({ user, numPomos }: Props) {
   const token = user.token;
+  const [type, setType] = useState<StateType>("work");
 
-  let pomoConfig = initiPomoConfig;
-
-  if (user.user?.pomoConfig) {
-    pomoConfig = user.user.pomoConfig;
-  }
-
-  let duration = 0;
-  switch (type) {
-    case "work":
-      duration = pomoConfig.workDuration;
-      break;
-    case "short_break":
-      duration = pomoConfig.shortBreakDuration;
-      break;
-    case "long_break":
-      duration = pomoConfig.longBreakDuration;
-      break;
-    default:
-      duration = 0;
-  }
+  const { pomoConfig } = user;
+  const duration = useCallback((value: StateType) => {
+    const d = {
+      work: pomoConfig.workDuration,
+      short_break: pomoConfig.shortBreakDuration,
+      long_break: pomoConfig.longBreakDuration,
+    }
+    return d[value];
+  }, [pomoConfig.longBreakDuration, pomoConfig.shortBreakDuration, pomoConfig.workDuration]);
 
   const timer = useSelector((state: RootState) => state.timer);
   const dispatch = useDispatch();
 
   const onCountdownChange = useCallback((value: number | string | undefined) => {
     if (value !== undefined) {
-      const calculateDuration = duration * 1000 * 60;
+      const calculateDuration = duration(type) * 1000 * 60;
       const percent = Math.round((1 - Number(value) / calculateDuration) * 100);
-      dispatch(countdownChange(percent));
+      dispatch(percentChange(percent));
     }
-  }, [dispatch, duration]);
+  }, [dispatch, duration, type]);
 
-  const onCountdownStart = useCallback(async () => {
-    console.log("[POMO-START]");
+  const onCountdownStart = useCallback(async (value: StateType) => {
     try {
-      const response = await axios(token).post(path.createPomo, {
+      // createPomo: `api/pomos`,
+      const response = await axios(token).post(p.apiPomos, {
         data: {
           start: moment().utc().format(),
-          type: type
+          type: value
         }
       });
-      dispatch(countdownStart({
+      dispatch(timerStart({
         pomo: response.data.data,
-        timer: moment().add(duration, "m").valueOf()
+        timer: moment().add(duration(value), "m").valueOf()
       }));
     } catch (error) {
       console.log("ERRO");
       console.log(error);
     }
-  }, [dispatch, duration, token, type]);
+  }, [dispatch, duration, token]);
 
 
   const onCountdownStop = useCallback(() => {
@@ -95,12 +83,22 @@ function CountdownComponent({ user, type }: Props) {
 
   const countdownOnFinish = async () => {
     alert("countdown finish")
-    const response = await axios(token).put(path.putPomo + timer.pomo.id, {
+    const response = await axios(token).put(p.apiPomos + q.queryID(timer.pomo.id), {
       data: {
         finish: true,
       }
     });
     console.log(response);
+    dispatch(timerFinish());
+    // let type: StateType = "work";
+    let newType: StateType = "work";
+    if (type === "work") {
+      newType = (numPomos > 0 && numPomos % pomoConfig.pomoBeforeLongBreak === 0) ? "long_break" : "short_break";
+    }
+    setType(newType);
+
+    console.log("ITS POSSIBLE THAT WORKS!")
+    onCountdownStart(newType);
   }
 
   const formatHandler = () => {
@@ -110,7 +108,6 @@ function CountdownComponent({ user, type }: Props) {
           value={timer.timer}
           onChange={onCountdownChange}
           format={"mm:ss"}
-          onFinish={countdownOnFinish}
         />
       } else {
         return (
@@ -129,47 +126,51 @@ function CountdownComponent({ user, type }: Props) {
 
   const checkPomoRunning = useCallback(async () => {
     try {
-      const response = await axios(token).get(path.getRunning);
+      const response = await axios(token).get(p.apiPomos + "?" + q.queryFilterStatusRunning);
       if (response.data.data.length > 0) {
         const end = moment(response.data.data[0].attributes.end);
         const diff = moment.duration(end.diff(moment()));
-        console.log(diff.valueOf());
         if (diff.valueOf() > 0) {
           const calculate = moment().add(diff).valueOf();
-          dispatch(countdownStart({
+          dispatch(timerStart({
             timer: Number(calculate),
             pomo: response.data.data[0]
           }));
         } else {
-          console.log("Diff is negative")
-          dispatch(countdownStart({
+          dispatch(timerStart({
             timer: Number(diff.valueOf()),
             pomo: response.data.data[0]
           }));
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.log("ERROR - Checking if exist a running pomo")
-      console.log(error)
+      console.log(error);
     }
   }, [dispatch, token]);
 
   useEffect(() => {
-    if (!timer.active) {
+    if (!timer.active && token) {
       checkPomoRunning();
     }
-  }, [checkPomoRunning, timer.active]);
+  }, [checkPomoRunning, timer.active, token]);
 
-  if (duration === 0) {
-    return <div>something did goes extreme wrong.</div>
-  }
+  const quickReset = useCallback(async () => {
+    const response = await axios(token).put(p.apiPomos + q.queryID(8), {
+      data: {
+        reset: true,
+      }
+    });
+    console.log(response)
+  }, [token]);
+
   return (
     <div className={classes.timer}>
       <IconButton
         className={classes.timerIcon}
         tooltip="Setting"
         size="small"
-        onClick={checkPomoRunning}
+        onClick={quickReset}
         icon={<SettingOutlined />}
       />
       <Progress
@@ -179,7 +180,7 @@ function CountdownComponent({ user, type }: Props) {
       />
       <ButtonSelector
         active={timer.active}
-        onStart={onCountdownStart}
+        onStart={() => onCountdownStart(type)}
         onStop={onCountdownStop}
       />
     </div>

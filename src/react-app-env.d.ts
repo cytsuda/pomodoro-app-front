@@ -15,6 +15,9 @@ declare module "*.module.less" {
 type ControlType = {
   token?: string;
   user?: UserType;
+  pomoConfig: PomoConfigType;
+  // preferenceCOnfig
+  // goalsCOnfig
 }
 type UserType = {
   blocked: boolean;
@@ -25,7 +28,6 @@ type UserType = {
   provider: string;
   updatedAt: Date;
   username: string;
-  pomoConfig: PomoConfigType | undefined;
 }
 
 // Timer, Countodown & Pomoconfig

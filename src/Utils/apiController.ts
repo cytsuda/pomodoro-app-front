@@ -1,5 +1,6 @@
 import axios from "axios";
 import qs from "qs";
+import moment from "moment";
 
 const api = (token?: string) => axios.create({
   baseURL: process.env.REACT_APP_SERVER_URL ? process.env.REACT_APP_SERVER_URL : "http://localhost:1337/",
@@ -7,41 +8,68 @@ const api = (token?: string) => axios.create({
   headers: token ? { 'Authorization': 'Bearer ' + token } : undefined
 });
 
-const getTaskQuery = qs.stringify({
+// TODO - optimize this thing
+export const path = {
+  apiRegister: "api/auth/local/register",
+  apiLogin: "api/auth/local",
+  apiMe: "api/users/me",
+  apiTasks: "api/tasks",
+  apiPomos: "api/pomos",
+  apiUserConfig: "/api/user-configs",
+  // getPomos: `api/pomos?${getPomoQuery}`,
+  // getRunning: `api/pomos?${queryFilterStatusRunning}`,
+  // putPomo: `api/pomos/`,
+  // updateTask: `api/tasks/`,
+  // getTasks: `api/tasks?${queryPopulateSubTasks}`,
+}
+// QUERIES
+const queryPopulateSubTasks = qs.stringify({
   populate: [
     "sub_tasks"
   ],
 }, {
   encodeValuesOnly: true,
 });
-const getPomoQuery = ''
-// const getPomoQuery = qs.stringify({
-//   populate: [
-//     "sub_tasks"
-//   ],
-// }, {
-//   encodeValuesOnly: true,
-// });
-const getRunningPomo = qs.stringify({
+
+// const getPomoQuery = ''
+const queryID = (id: number | string) => `/${id}`;
+const queryFilterStatusRunning = qs.stringify({
   filters: {
     status: {
       $eq: 'running'
     }
   }
-})
+});
+// created_at_gte=2020-01-01&created_at_lte=2020-01-31
 
-// TODO - optimize this thing
-export const path = {
-  register: 'api/auth/local/register',
-  login: 'api/auth/local',
-  me: "api/users/me",
-  newTask: "api/tasks",
-  getTasks: `api/tasks?${getTaskQuery}`,
-  updateTask: `api/tasks/`,
-  createPomo: `api/pomos`,
-  getPomos: `api/pomos?${getPomoQuery}`,
-  getRunning: `api/pomos?${getRunningPomo}`,
-  putPomo: `api/pomos/`
+const queryFilterToday = () => {
+  const start = moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
+  const end = moment().add(1, "days").set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
+
+  return qs.stringify({
+    filters: {
+      $and: [
+        {
+          end: {
+            $gte: start.utc().format()
+          }
+        }, {
+          end: {
+            $lte: end.utc().format()
+          }
+        }, {
+          status: {
+            $eq: "completed"
+          }
+        }
+      ]
+    }
+  })
+};
+export const query = {
+  queryPopulateSubTasks,
+  queryFilterStatusRunning,
+  queryID,
+  queryFilterToday
 }
-
 export default api;

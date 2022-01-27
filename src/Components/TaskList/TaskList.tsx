@@ -1,7 +1,7 @@
 import React, { useState, useRef, useCallback, useEffect } from "react";
 import clsx from "clsx";
 // Axios
-import axios, { path } from "@/Utils/apiController";
+import axios, { path as p, query as q } from "@/Utils/apiController";
 
 // Redux
 import { useSelector, useDispatch } from "react-redux";
@@ -72,12 +72,12 @@ const TaskListComponent = () => {
     try {
       console.log("trying to push")
       console.log(text)
-      const response = await axios(user.token).post(path.newTask, {
+      const response = await axios(user.token).post(p.apiTasks, {
         data: { title: text }
       });
       console.log("SUCCESS");
       console.log(response);
-      const res = await axios(user.token).get(path.getTasks);
+      const res = await axios(user.token).get(p.apiTasks + "?" + q.queryPopulateSubTasks);
       dispatch(getTasks(res.data.data));
     } catch (error) {
       console.log("FAIL");
@@ -88,9 +88,8 @@ const TaskListComponent = () => {
 
   const getAllTask = useCallback(async () => {
     dispatch(loadingTask());
-    console.log("getAllTask")
     try {
-      const res = await axios(user.token).get(path.getTasks);
+      const res = await axios(user.token).get(p.apiTasks + "?" + q.queryPopulateSubTasks);
       dispatch(getTasks(res.data.data));
 
     } catch (error) {

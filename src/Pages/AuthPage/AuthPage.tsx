@@ -13,7 +13,7 @@ import { useCookies } from 'react-cookie';
 // Ant Design
 import { Card, Form } from "antd";
 // Axios
-import axios, { path } from "@/Utils/apiController";
+import axios, { path as p } from "@/Utils/apiController";
 
 // Custom component
 import LoginTab from "./LoginTab/LoginTab";
@@ -50,7 +50,7 @@ const LoginPage = () => {
 
   const onLoginSubmit = async (value: LoginType) => {
     try {
-      const res = await axios().post(path.login, {
+      const res = await axios().post(p.apiLogin, {
         identifier: value.identifier,
         password: value.password
       });
@@ -71,7 +71,7 @@ const LoginPage = () => {
     console.log("Register submit");
     console.log(value);
     try {
-      const res = await axios().post(path.register, {
+      const res = await axios().post(p.apiRegister, {
         username: value.username,
         email: value.email,
         password: value.password,
