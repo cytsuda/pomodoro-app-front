@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-
+import clsx from "clsx";
 import moment from "moment";
 
 // Axios
@@ -18,7 +18,6 @@ import IconButton from "@/Components/IconButton/IconButton";
 
 // Classes & Styles
 import classes from "./Countdown.module.less";
-import { workerData } from 'worker_threads';
 
 // Desconstructor
 const { Countdown } = Statistic;
@@ -58,6 +57,7 @@ function CountdownComponent({ user, numPomos }: Props) {
   }, [dispatch, duration, type]);
 
   const onCountdownStart = useCallback(async (value: StateType) => {
+    console.log("COUNTDOWN START")
     try {
       // createPomo: `api/pomos`,
       const response = await axios(token).post(p.apiPomos, {
@@ -103,11 +103,12 @@ function CountdownComponent({ user, numPomos }: Props) {
 
   const formatHandler = () => {
     if (timer.active) {
-      if (timer.timer >= 0) {
+      if (timer.timer > 0) {
         return <Countdown
           value={timer.timer}
           onChange={onCountdownChange}
           format={"mm:ss"}
+          onFinish={countdownOnFinish}
         />
       } else {
         return (
@@ -180,8 +181,10 @@ function CountdownComponent({ user, numPomos }: Props) {
       />
       <ButtonSelector
         active={timer.active}
+        timer={timer.timer}
         onStart={() => onCountdownStart(type)}
         onStop={onCountdownStop}
+        onFinish={countdownOnFinish}
       />
     </div>
   );
@@ -189,22 +192,39 @@ function CountdownComponent({ user, numPomos }: Props) {
 export default CountdownComponent;
 
 type Btn = {
-  active: boolean, onStart: () => void, onStop: () => void
+  active: boolean,
+  timer: number,
+  onStart: () => void,
+  onStop: () => void,
+  onFinish: () => void,
 }
 
 
-const ButtonSelector = ({ active, onStart, onStop }: Btn) => {
+const ButtonSelector = ({ active, onStart, onStop, onFinish, timer }: Btn) => {
   if (active) {
-    return (
-      <Button
-        className={classes.timerBtn}
-        shape="round" size="large"
-        ghost danger
-        onClick={onStop}
-      >
-        Stop
-      </Button>
-    );
+    if (timer > 0) {
+      return (
+        <Button
+          className={classes.timerBtn}
+          shape="round" size="large"
+          ghost danger
+          onClick={onStop}
+        >
+          Stop
+        </Button>
+      );
+    } else {
+      return (
+        <Button
+          className={clsx(classes.timerBtn, classes.timerSuccess)}
+          shape="round" size="large"
+          type="primary"
+          onClick={onFinish}
+        >
+          Finish
+        </Button>
+      );
+    }
   } else {
     return (
       <Button

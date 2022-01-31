@@ -18,6 +18,22 @@
     min-width: 50%;
     max-width: 90%;
   }
+  &Success {
+    background-color: @success-color;
+    border-color: @success-color-outline;
+    color: @white;
+    &:hover {
+      background-color: darken(@success-color-hover, 20%);
+      border-color: darken(@success-color-outline, 20%);
+      color: @white;
+    }
+    &:focus,
+    &:active {
+      background-color: darken(@success-color-hover, 15%);
+      border-color: darken(@success-color-outline, 15%);
+      color: @white;
+    }
+  }
 }
 .specialBtn {
   cursor: pointer;
