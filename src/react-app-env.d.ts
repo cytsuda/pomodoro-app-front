@@ -32,12 +32,11 @@ type UserType = {
 
 // Timer, Countodown & Pomoconfig
 type CountdownType = {
-  active: boolean;
-  percent: number;
-  timer: number | string | undefined;
-  pomo: PomoType | undefined;
-}
+  end: number,
+  status: CountdownStatusType;
+  type: PomoWorkTypes
 
+}
 type PomoConfigType = {
   workDuration: number,
   shortBreakDuration: number,
@@ -57,9 +56,9 @@ type PomoType = {
     start: Date,
     end: Date,
     tasks: FetchedTaskType[],
-    status: "running" | "completed" | "canceled" | "pause",
+    status: StatusType;
     remain: number,
-    type: "work" | "short_break" | "long_break"
+    type: PomoWorkTypes
   }
 }
 
@@ -86,3 +85,7 @@ type FetchedTaskType = {
   id: number;
   attributes: TaskType
 }
+
+type CountdownStatusType = "running" | "finish" | "pause" | "waiting";
+type StatusType = "running" | "completed" | "canceled" | "pause";
+type PomoWorkTypes = "work" | "short_break" | "long_break";

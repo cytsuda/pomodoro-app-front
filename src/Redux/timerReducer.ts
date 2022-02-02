@@ -1,47 +1,39 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 const initialState: CountdownType = {
-  active: false,
-  percent: 0,
-  timer: 0,
-  pomo: undefined,
+  end: Date.now(),
+  status: "waiting",
+  type: "work"
 }
 
-type CountdownStart = {
-  pomo: PomoType;
-  timer: number | string | undefined
+type TimerStartPayload = {
+  end: number;
+  type: PomoWorkTypes;
 }
+
 export const timerSlice = createSlice({
   name: 'timer',
   initialState,
   reducers: {
-
-    // Countdown Section
-    percentChange: (state, action: PayloadAction<number>) => {
-      state.percent = action.payload;
+    timerStart: (state: CountdownType, action: PayloadAction<TimerStartPayload>) => {
+      state.end = action.payload.end;
+      state.status = "running";
+      state.type = action.payload.type;
     },
-    timerStart: (state, action: PayloadAction<CountdownStart>) => {
-      state.active = true;
-      state.timer = action.payload.timer;
-      state.pomo = action.payload.pomo;
+    timerFinish: (state: CountdownType) => {
+      state.status = "finish";
     },
-    timerCancel: (state) => {
-      state.active = false;
-      console.log("Contdown stop need to send cancel request to backend")
+    timerNext: (state: CountdownType, action: PayloadAction<PomoWorkTypes>) => {
+      state.end = Date.now();
+      state.status = "waiting";
+      state.type = action.payload;
     },
-    timerFinish: () => {
-      return initialState;
-    }
-
   },
 })
-
+// status  "running" | "finish" | "pause" | "waiting"
 // Action creators are generated for each case reducer function
 export const {
-  percentChange,
-  timerStart,
-  timerCancel,
-  timerFinish,
+  timerStart, timerFinish, timerNext
 } = timerSlice.actions
 
 export default timerSlice.reducer

@@ -32,13 +32,12 @@ const PomoController = ({ className }: Props) => {
   const dispatch = useDispatch();
   const pomo = useSelector((state: RootState) => state.pomo);
   const user = useSelector((state: RootState) => state.user);
-
   const { pomoConfig } = user
   const getAllPomos = useCallback(async () => {
 
     try {
       const response = await axios(user.token).get(p.apiPomos + "?" + q.queryFilterToday());
-      console.log('Get allPomo - TODAY ');
+      // console.log('Get allPomo - TODAY ');
       // for now is 1, when i finish this need to be 2
       dispatch(setPomos(response.data.data));
 
@@ -58,7 +57,7 @@ const PomoController = ({ className }: Props) => {
     <>
       <Card
         className={clsx(className, classes.container)}
-        cover={<CountdownComponent user={user} numPomos={pomo.pomos.length } />}
+        cover={<CountdownComponent user={user} numPomos={pomo.pomos.length} />}
       >
         <Meta
           title="Card title"

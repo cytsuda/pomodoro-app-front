@@ -7,17 +7,19 @@ import axios, { path as p, query as q } from "@/Utils/apiController";
 
 // Redux
 import { useSelector, useDispatch } from "react-redux";
-import { percentChange, timerStart, timerFinish } from "@/Redux/timerReducer"
+import { timerStart, timerFinish, timerNext } from "@/Redux/timerReducer"
 
 // Ant Design
-import { Button, Progress, Statistic, Typography } from "antd"
+import { Progress, Statistic, Typography } from "antd"
 import { SettingOutlined } from '@ant-design/icons';
 
 // Custom Components
 import IconButton from "@/Components/IconButton/IconButton";
+import CountdownBtn from '@/Components/Contdown/CountdownBtn';
 
 // Classes & Styles
 import classes from "./Countdown.module.less";
+import { Content } from 'antd/lib/layout/layout';
 
 // Desconstructor
 const { Countdown } = Statistic;
@@ -30,11 +32,21 @@ type Props = {
 };
 
 type StateType = "work" | "short_break" | "long_break"
-
+const durationMesure = 's';
+const convertTime = (type: "m" | "s") => {
+  let multiplier = 1000;
+  if (type === "m") {
+    multiplier *= 60;
+  }
+  return multiplier;
+}
 function CountdownComponent({ user, numPomos }: Props) {
   const token = user.token;
-  const [type, setType] = useState<StateType>("work");
+  const timer = useSelector((state: RootState) => state.timer);
+  const dispatch = useDispatch();
+  const [progress, setProgress] = useState<number>(0);
 
+  // Calculate Duration base on type of pomo;
   const { pomoConfig } = user;
   const duration = useCallback((value: StateType) => {
     const d = {
@@ -44,197 +56,106 @@ function CountdownComponent({ user, numPomos }: Props) {
     }
     return d[value];
   }, [pomoConfig.longBreakDuration, pomoConfig.shortBreakDuration, pomoConfig.workDuration]);
+  // ------------------------------------------
+  // TODO make stop and pause
+  const onStart = useCallback((type: StateType) => {
+    const now = moment();
+    const end = moment(now).add(duration(type), durationMesure);
+    dispatch(timerStart({
+      end: end.valueOf(),
+      type: type
+    }))
+  }, [dispatch, duration]);
 
-  const timer = useSelector((state: RootState) => state.timer);
-  const dispatch = useDispatch();
-
-  const onCountdownChange = useCallback((value: number | string | undefined) => {
-    if (value !== undefined) {
-      const calculateDuration = duration(type) * 1000 * 60;
-      const percent = Math.round((1 - Number(value) / calculateDuration) * 100);
-      dispatch(percentChange(percent));
-    }
-  }, [dispatch, duration, type]);
-
-  const onCountdownStart = useCallback(async (value: StateType) => {
-    console.log("COUNTDOWN START")
-    try {
-      // createPomo: `api/pomos`,
-      const response = await axios(token).post(p.apiPomos, {
-        data: {
-          start: moment().utc().format(),
-          type: value
-        }
-      });
-      dispatch(timerStart({
-        pomo: response.data.data,
-        timer: moment().add(duration(value), "m").valueOf()
-      }));
-    } catch (error) {
-      console.log("ERRO");
-      console.log(error);
-    }
-  }, [dispatch, duration, token]);
-
-
-  const onCountdownStop = useCallback(() => {
-    console.log(timer.pomo);
-  }, [timer]);
-
-  const countdownOnFinish = async () => {
-    alert("countdown finish")
-    const response = await axios(token).put(p.apiPomos + q.queryID(timer.pomo.id), {
-      data: {
-        finish: true,
-      }
-    });
-    console.log(response);
+  const onAutoFinish = useCallback(() => {
     dispatch(timerFinish());
-    // let type: StateType = "work";
+  }, [dispatch]);
+
+  const onFinishPomo = useCallback(() => {
     let newType: StateType = "work";
-    if (type === "work") {
+    if (timer.type === "work") {
       newType = (numPomos > 0 && numPomos % pomoConfig.pomoBeforeLongBreak === 0) ? "long_break" : "short_break";
     }
-    setType(newType);
+    dispatch(timerNext(newType));
+  }, [dispatch, numPomos, pomoConfig.pomoBeforeLongBreak, timer.type]);
 
-    console.log("ITS POSSIBLE THAT WORKS!")
-    onCountdownStart(newType);
-  }
+  // -------------------------------------------------
 
-  const formatHandler = () => {
-    if (timer.active) {
-      if (timer.timer > 0) {
-        return <Countdown
-          value={timer.timer}
-          onChange={onCountdownChange}
-          format={"mm:ss"}
-          onFinish={countdownOnFinish}
-        />
-      } else {
+  const onChangeCountdown = useCallback((value: number | string | undefined) => {
+    // TODO - put different colors on the progress bar if complete or yada yada yada
+    if (value !== undefined) {
+      const calculateDuration = duration(timer.type) * convertTime(durationMesure);
+      const divide = Number(value) / calculateDuration;
+      console.log(divide);
+      const percent = Math.round((1 - divide) * 100);
+      console.log(percent);
+      setProgress(percent);
+    }
+  }, [duration, timer.type]);
+
+
+  const formatHandler = useCallback(() => {
+    //  "running" | "finish" | "pause" | "waiting";
+    switch (timer.status) {
+      case "running":
+        return (
+          <Countdown
+            value={moment(timer.end).format()}
+            format={"mm:ss"}
+            onChange={onChangeCountdown}
+            onFinish={onAutoFinish}
+          />
+        );
+      case "finish":
         return (
           <Text
             className={classes.specialBtn}
             type="success"
-            onClick={countdownOnFinish}
+            onClick={onFinishPomo}
           >
             Finish
           </Text>
+        );
+      case "waiting":
+        return (
+          <Text
+            className={classes.specialBtn}
+            type="secondary"
+            onClick={() => onStart(timer.type)}
+          >
+            Start
+          </Text>
         )
-      }
+      default:
+        return (
+          <Text>
+            not ready
+          </Text>
+        )
     }
-    return moment(25, "m").format("mm:ss");
-  }
-
-  const checkPomoRunning = useCallback(async () => {
-    try {
-      const response = await axios(token).get(p.apiPomos + "?" + q.queryFilterStatusRunning);
-      if (response.data.data.length > 0) {
-        const end = moment(response.data.data[0].attributes.end);
-        const diff = moment.duration(end.diff(moment()));
-        if (diff.valueOf() > 0) {
-          const calculate = moment().add(diff).valueOf();
-          dispatch(timerStart({
-            timer: Number(calculate),
-            pomo: response.data.data[0]
-          }));
-        } else {
-          dispatch(timerStart({
-            timer: Number(diff.valueOf()),
-            pomo: response.data.data[0]
-          }));
-        }
-      }
-    } catch (error: any) {
-      console.log("ERROR - Checking if exist a running pomo")
-      console.log(error);
-    }
-  }, [dispatch, token]);
-
-  useEffect(() => {
-    if (!timer.active && token) {
-      checkPomoRunning();
-    }
-  }, [checkPomoRunning, timer.active, token]);
-
-  const quickReset = useCallback(async () => {
-    const response = await axios(token).put(p.apiPomos + q.queryID(8), {
-      data: {
-        reset: true,
-      }
-    });
-    console.log(response)
-  }, [token]);
+  }, [onAutoFinish, onChangeCountdown, onFinishPomo, onStart, timer.end, timer.status, timer.type]);
 
   return (
     <div className={classes.timer}>
+      <p>{timer.status}</p>
       <IconButton
         className={classes.timerIcon}
         tooltip="Setting"
         size="small"
-        onClick={quickReset}
+        onClick={() => console.log("IDONT WHAT IS IT")}
         icon={<SettingOutlined />}
       />
       <Progress
         type="circle"
-        percent={timer.timer >= 0 ? timer.percent : 100}
+        percent={timer.status === "running" ? progress : 0}
         format={formatHandler}
       />
-      <ButtonSelector
-        active={timer.active}
-        timer={timer.timer}
-        onStart={() => onCountdownStart(type)}
-        onStop={onCountdownStop}
-        onFinish={countdownOnFinish}
+      <CountdownBtn
+        status={timer.status}
+        onStart={() => onStart(timer.type)}
+        onFinish={onFinishPomo}
       />
     </div>
   );
 }
 export default CountdownComponent;
-
-type Btn = {
-  active: boolean,
-  timer: number,
-  onStart: () => void,
-  onStop: () => void,
-  onFinish: () => void,
-}
-
-
-const ButtonSelector = ({ active, onStart, onStop, onFinish, timer }: Btn) => {
-  if (active) {
-    if (timer > 0) {
-      return (
-        <Button
-          className={classes.timerBtn}
-          shape="round" size="large"
-          ghost danger
-          onClick={onStop}
-        >
-          Stop
-        </Button>
-      );
-    } else {
-      return (
-        <Button
-          className={clsx(classes.timerBtn, classes.timerSuccess)}
-          shape="round" size="large"
-          type="primary"
-          onClick={onFinish}
-        >
-          Finish
-        </Button>
-      );
-    }
-  } else {
-    return (
-      <Button
-        className={classes.timerBtn}
-        shape="round" size="large"
-        type="primary"
-        onClick={onStart}
-      >
-        Start
-      </Button>
-    );
-  }
-}

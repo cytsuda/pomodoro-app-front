@@ -18,7 +18,19 @@
     min-width: 50%;
     max-width: 90%;
   }
-  &Success {
+}
+.specialBtn {
+  cursor: pointer;
+  user-select: none;
+  &.primary {
+    color: @primary-color;
+  }
+}
+
+.btn {
+  &Start {
+  }
+  &Finish {
     background-color: @success-color;
     border-color: @success-color-outline;
     color: @white;
@@ -34,8 +46,8 @@
       color: @white;
     }
   }
-}
-.specialBtn {
-  cursor: pointer;
-  user-select: none;
+  &Stop {
+  }
+  &Error {
+  }
 }
