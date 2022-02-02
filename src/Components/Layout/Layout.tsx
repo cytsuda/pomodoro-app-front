@@ -43,9 +43,11 @@ const LayoutPage = () => {
       user: response.data
     }));
     try {
-      const userConfig = await axios(token).get(p.apiUserConfig);
-      if (userConfig.data.pomoConfig) {
-        dispatch(setPomoConfig(userConfig.data.pomoConfig));
+      // res: {id, attributes}
+      const { data: res } = await axios(token).get(p.apiUserConfig);
+      const { attributes } = res.data;
+      if (attributes) {
+        dispatch(setPomoConfig(attributes.pomoConfig));
       }
     } catch (error) {
       console.log("LoadUSerHandler - error");

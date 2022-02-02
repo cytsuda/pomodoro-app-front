@@ -17,7 +17,7 @@ export const path = {
   apiPomos: "api/pomos",
   apiUserConfig: "/api/user-configs",
   // getPomos: `api/pomos?${getPomoQuery}`,
-  // getRunning: `api/pomos?${queryFilterStatusRunning}`,
+  // getrunning: `api/pomos?${queryFilterStatusrunning}`,
   // putPomo: `api/pomos/`,
   // updateTask: `api/tasks/`,
   // getTasks: `api/tasks?${queryPopulateSubTasks}`,
@@ -33,7 +33,7 @@ const queryPopulateSubTasks = qs.stringify({
 
 // const getPomoQuery = ''
 const queryID = (id: number | string) => `/${id}`;
-const queryFilterStatusRunning = qs.stringify({
+const queryFilterStatusrunning = qs.stringify({
   filters: {
     status: {
       $eq: 'running'
@@ -68,7 +68,7 @@ const queryFilterToday = () => {
 };
 export const query = {
   queryPopulateSubTasks,
-  queryFilterStatusRunning,
+  queryFilterStatusrunning,
   queryID,
   queryFilterToday
 }

@@ -8,11 +8,13 @@ import { Button } from "antd";
 import classes from "./Countdown.module.less";
 type Props = {
   status: CountdownStatusType;
+  className: string;
+  disabled: boolean;
   onStart: () => void;
   onFinish: () => void;
 }
 
-const CountdownBtn = ({ status, onStart, onFinish }: Props) => {
+const CountdownBtn = ({ status, className, disabled, onStart, onFinish }: Props) => {
   let text = "error";
   let classname = "";
   let fn = () => { };
@@ -40,10 +42,11 @@ const CountdownBtn = ({ status, onStart, onFinish }: Props) => {
 
   return (
     <Button
-      className={clsx(classes.timerBtn, classname)}
+      className={clsx(classes.timerBtn, classname, className)}
       shape="round" size="large"
       danger={status === "running"}
       type={status !== "running" ? "primary" : "ghost"}
+      disabled={disabled}
       onClick={fn}
     >
       {text}

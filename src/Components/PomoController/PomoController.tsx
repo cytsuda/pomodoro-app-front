@@ -32,14 +32,14 @@ const PomoController = ({ className }: Props) => {
   const dispatch = useDispatch();
   const pomo = useSelector((state: RootState) => state.pomo);
   const user = useSelector((state: RootState) => state.user);
-  const { pomoConfig } = user
+  const { pomoConfig } = user;
   const getAllPomos = useCallback(async () => {
 
     try {
       const response = await axios(user.token).get(p.apiPomos + "?" + q.queryFilterToday());
       // console.log('Get allPomo - TODAY ');
       // for now is 1, when i finish this need to be 2
-      dispatch(setPomos(response.data.data));
+      dispatch(setPomos({ pomos: response.data.data, total: response.data.meta.pagination.total }));
 
     } catch (error) {
       console.log("[GET_ALL_POMOS] -error");
@@ -52,12 +52,11 @@ const PomoController = ({ className }: Props) => {
       getAllPomos();
     }
   }, [getAllPomos, user.token]);
-
   return (
     <>
       <Card
         className={clsx(className, classes.container)}
-        cover={<CountdownComponent user={user} numPomos={pomo.pomos.length} />}
+        cover={<CountdownComponent user={user} />}
       >
         <Meta
           title="Card title"
@@ -77,7 +76,7 @@ const PomoController = ({ className }: Props) => {
             <Timeline mode="left">
               {pomo.pomos.map((item: PomoType) => (
                 <Timeline.Item key={item.id}>
-                  <p>{moment(item.attributes.end).format("DD/MM/YY HH:mm:ss")}</p>
+                  <p>{moment(item.attributes.end).format("DD/MM/YY HH:mm:ss")} - {item.attributes.type}</p>
                   {(item.attributes.tasks && item.attributes.tasks.length > 0) ? item.attributes.tasks.map((task: FetchedTaskType) => (
                     <p key={`task_` + task.id}>{task.attributes.title}</p>
                   )) : (

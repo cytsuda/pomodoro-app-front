@@ -30,7 +30,7 @@ Task Object need to have:
 - [x] - Finish: a boolean value representing whether the task completed or not;
 - [x] - Finish Date: the date when the task was completed;
 - [x] - Remind: date to remind about task;
-- [] - Sublist: an array of subtaks;
+- [ ] - Sublist: an array of subtaks;
   - [x] - Title: very short text
   - [x] - Complete: a flag to show if the subtask is complete
   - [x] - Reference: a relationship with parent task

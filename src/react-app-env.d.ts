@@ -34,7 +34,8 @@ type UserType = {
 type CountdownType = {
   end: number,
   status: CountdownStatusType;
-  type: PomoWorkTypes
+  type: PomoWorkTypes;
+  pomoID: string;
 
 }
 type PomoConfigType = {
@@ -47,6 +48,7 @@ type PomoConfigType = {
 
 type PomoControlType = {
   pomos: PomoType[];
+  total: number;
   loading: boolean;
 }
 

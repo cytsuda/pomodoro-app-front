@@ -2,7 +2,7 @@
 import { Typography } from "antd";
 
 // Custom components
-import TimerComponent from "@/Components/PomoController/PomoController";
+import PomoController from "@/Components/PomoController/PomoController";
 import TaskListComponent from "@/Components/TaskList/TaskList";
 
 // Classes & Styles
@@ -19,7 +19,7 @@ const ClockPage = () => {
         Clock/Working Page
       </Title>
       <div className={classes.container}>
-        <TimerComponent className={classes.small} />
+        <PomoController className={classes.small} />
         <div className={classes.big}>
           <TaskListComponent />
         </div>

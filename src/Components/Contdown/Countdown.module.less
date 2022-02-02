@@ -22,10 +22,27 @@
 .specialBtn {
   cursor: pointer;
   user-select: none;
-  &.primary {
-    color: @primary-color;
+  &.work {
+    color: @red-6;
+  }
+  &.short {
+    color: @cyan-6;
+  }
+  &.long {
+    color: @blue-6;
   }
 }
+@work-color-hover: color(~`colorPalette("@{red-6}", 5) `);
+@work-color-active: color(~`colorPalette("@{red-6}", 7) `);
+@work-color-outline: fade(@red-6, @outline-fade);
+
+@short-color-hover: color(~`colorPalette("@{cyan-6}", 5) `);
+@short-color-active: color(~`colorPalette("@{cyan-6}", 7) `);
+@short-color-outline: fade(@cyan-6, @outline-fade);
+
+@long-color-hover: color(~`colorPalette("@{blue-6}", 5) `);
+@long-color-active: color(~`colorPalette("@{blue-6}", 7) `);
+@long-color-outline: fade(@blue-6, @outline-fade);
 
 .btn {
   &Start {
@@ -44,6 +61,55 @@
       background-color: darken(@success-color-hover, 15%);
       border-color: darken(@success-color-outline, 15%);
       color: @white;
+    }
+    // ------------------------------------------
+    &.work {
+      background-color: @red-6;
+      border-color: @work-color-outline;
+      color: @white;
+      &:hover {
+        background-color: @work-color-hover;
+        border-color: @work-color-outline;
+        color: @white;
+      }
+      &:focus,
+      &:active {
+        background-color: @work-color-active;
+        border-color: @work-color-outline;
+        color: @white;
+      }
+    }
+    &.short {
+      background-color: @cyan-6;
+      border-color: @short-color-outline;
+      color: @white;
+      &:hover {
+        background-color: @short-color-hover;
+        border-color: @short-color-outline;
+        color: @white;
+      }
+      &:focus,
+      &:active {
+        background-color: @short-color-active;
+        border-color: @short-color-outline;
+        color: @white;
+      }
+    }
+    &.long {
+      background-color: @cyan-6;
+      border-color: @long-color-outline;
+      color: @white;
+      &:hover {
+        background-color: @long-color-hover;
+        border-color: @long-color-outline;
+        color: @white;
+      }
+      &:focus,
+      &:active {
+        background-color: @long-color-active;
+        border-color: @long-color-outline;
+        color: @white;
+      }
     }
   }
   &Stop {
