@@ -12,7 +12,9 @@ import { useCookies } from 'react-cookie';
 
 // Ant Design
 import { Card, Form } from "antd";
+
 // Axios
+import request from "axios";
 import axios, { path as p } from "@/Utils/apiController";
 
 // Custom component
@@ -60,10 +62,11 @@ const LoginPage = () => {
         user: user
       }));
       setCookie("token", jwt, { path: "/", secure: true });
-    } catch (error) {
-      // TODO - add bad request - pop error
-      console.log("Error");
-      console.log(error)
+    } catch (err) {
+      if (request.isAxiosError(err) && err.response) {
+        const { error } = err.response.data;
+        console.log(error)
+      }
     }
   }
 
@@ -82,10 +85,11 @@ const LoginPage = () => {
         user: user
       }));
       setCookie("token", jwt, { path: "/", secure: true });
-    } catch (error) {
-      // TODO - add bad request handler - pop error
-      console.log("Error")
-      console.log(error)
+    } catch (err) {
+      if (request.isAxiosError(err) && err.response) {
+        const { error } = err.response.data;
+        console.log(error)
+      }
     }
   }
 

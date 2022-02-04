@@ -4,6 +4,7 @@ import clsx from "clsx";
 import moment from "moment";
 
 // Axios
+import request from "axios";
 import axios, { path as p, query as q } from "@/Utils/apiController";
 
 // Redux
@@ -41,9 +42,11 @@ const PomoController = ({ className }: Props) => {
       // for now is 1, when i finish this need to be 2
       dispatch(setPomos({ pomos: response.data.data, total: response.data.meta.pagination.total }));
 
-    } catch (error) {
-      console.log("[GET_ALL_POMOS] -error");
-      console.log(error);
+    } catch (err) {
+      if (request.isAxiosError(err) && err.response) {
+        const { error } = err.response.data;
+        console.log(error)
+      }
     }
   }, [dispatch, user.token]);
 
@@ -58,6 +61,7 @@ const PomoController = ({ className }: Props) => {
         className={clsx(className, classes.container)}
         cover={<CountdownComponent user={user} />}
       >
+        {/* TODO - What should be displayed in cardTitle and Description?? */}
         <Meta
           title="Card title"
           description="This is the description"
@@ -75,12 +79,13 @@ const PomoController = ({ className }: Props) => {
           <Card title="Complete tasks and when">
             <Timeline mode="left">
               {pomo.pomos.map((item: PomoType) => (
-                <Timeline.Item key={item.id}>
+                <Timeline.Item key={item.id} color={getColor(item.attributes.type)} >
                   <p>{moment(item.attributes.end).format("DD/MM/YY HH:mm:ss")} - {item.attributes.type}</p>
-                  {(item.attributes.tasks && item.attributes.tasks.length > 0) ? item.attributes.tasks.map((task: FetchedTaskType) => (
+                  {console.log(item.attributes.tasks)}
+                  {(item.attributes.tasks && item.attributes.tasks.data.length > 0) ? item.attributes.tasks.data.map((task: FetchedTaskType) => (
                     <p key={`task_` + task.id}>{task.attributes.title}</p>
                   )) : (
-                    <p>No task associated</p>
+                    <p>No task associateds</p>
                   )}
                 </Timeline.Item>
               ))}
@@ -93,3 +98,15 @@ const PomoController = ({ className }: Props) => {
 }
 
 export default PomoController;
+const getColor = (type: string) => {
+  switch (type) {
+    case "work":
+      return "red";
+    case "short_break":
+      return "cyan";
+    case "long_break":
+      return "blue";
+    default:
+      return "yellow"
+  }
+}

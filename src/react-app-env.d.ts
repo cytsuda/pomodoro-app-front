@@ -57,7 +57,9 @@ type PomoType = {
   attributes: {
     start: Date,
     end: Date,
-    tasks: FetchedTaskType[],
+    tasks: {
+      data: FetchedTaskType[]
+    },
     status: StatusType;
     remain: number,
     type: PomoWorkTypes
@@ -75,6 +77,7 @@ type TaskType = {
   expectPomo?: number;
   workedPomo?: number;
   complete: boolean;
+  intermediate: boolean;
   sub_tasks?: Array;
   completeDate?: Date | moment;
   remind?: Date | moment;

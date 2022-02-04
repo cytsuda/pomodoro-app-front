@@ -16,8 +16,8 @@ function App() {
       {/* Rotas protegidas */}
       <Route path="/" element={<Layout />}>
         <Route index element={<ClockPage />} />
-        {/* TODO - add project/:id page, show tasks*/}
-        {/* TODO - add project/task/:id page */}
+        {/* TODO - create page for history & reports*/}
+        {/* TODO - create page for tasks & subtasks*/}
         <Route path="*" element={<NotFoundPage />} />
       </Route>
       <Route path="/login" element={<AuthPage />} />

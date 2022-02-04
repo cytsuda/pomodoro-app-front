@@ -47,6 +47,9 @@ const queryFilterToday = () => {
   const end = moment().add(1, "days").set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
 
   return qs.stringify({
+    populate: [
+      "tasks"
+    ],
     filters: {
       $and: [
         {

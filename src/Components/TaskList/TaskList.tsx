@@ -1,6 +1,8 @@
 import React, { useState, useRef, useCallback, useEffect } from "react";
 import clsx from "clsx";
+
 // Axios
+import request from "axios";
 import axios, { path as p, query as q } from "@/Utils/apiController";
 
 // Redux
@@ -79,9 +81,11 @@ const TaskListComponent = () => {
       console.log(response);
       const res = await axios(user.token).get(p.apiTasks + "?" + q.queryPopulateSubTasks);
       dispatch(getTasks(res.data.data));
-    } catch (error) {
-      console.log("FAIL");
-      console.log(error);
+    } catch (err) {
+      if (request.isAxiosError(err) && err.response) {
+        const { error } = err.response.data;
+        console.log(error)
+      }
       dispatch(failTask());
     }
   }
@@ -92,9 +96,11 @@ const TaskListComponent = () => {
       const res = await axios(user.token).get(p.apiTasks + "?" + q.queryPopulateSubTasks);
       dispatch(getTasks(res.data.data));
 
-    } catch (error) {
-      console.error("[GET ALL TASK] - Fail");
-      console.log(error);
+    } catch (err) {
+      if (request.isAxiosError(err) && err.response) {
+        const { error } = err.response.data;
+        console.log(error)
+      }
       dispatch(failTask());
     }
   }, [dispatch, user.token]);
@@ -137,7 +143,7 @@ const TaskListComponent = () => {
         </div>
       </div>
       <div className={classes.content}>
-        {tasks && tasks.data.map((item: FetchedTaskType) => (
+        {tasks && tasks.data.filter((item: FetchedTaskType) => !item.attributes.completeDate).map((item: FetchedTaskType) => (
           <TaskItem id={item.id} data={item.attributes} key={item.id} />
         ))}
       </div>

@@ -1,6 +1,9 @@
 import { useState } from "react";
 import moment from "moment";
 import produce from "immer";
+
+// Axios
+import request from "axios";
 import axios, { path as p, query as q } from "@/Utils/apiController";
 
 // Redux
@@ -63,9 +66,12 @@ const TaskEditor = (props: TaskEditorPropType) => {
       const res = await axios(token).get(p.apiTasks + "?" + q.queryPopulateSubTasks);
       dispatch(getTasks(res.data.data));
       setOpen(false);
-    } catch (error) {
+    } catch (err) {
       console.log("TaskItem Error");
-      console.log(error);
+      if (request.isAxiosError(err) && err.response) {
+        const { error } = err.response.data;
+        console.log(error)
+      }
       dispatch(failTask());
       setOpen(false);
     }

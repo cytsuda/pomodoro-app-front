@@ -1,4 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
+// Axios
+import request from "axios";
 import axios, { path as p } from "@/Utils/apiController";
 // Ant Desing
 import { Outlet, Link, Navigate, useLocation } from "react-router-dom";
@@ -49,9 +51,11 @@ const LayoutPage = () => {
       if (attributes) {
         dispatch(setPomoConfig(attributes.pomoConfig));
       }
-    } catch (error) {
-      console.log("LoadUSerHandler - error");
-      console.log(error)
+    } catch (err) {
+      if (request.isAxiosError(err) && err.response) {
+        const { error } = err.response.data;
+        console.log(error)
+      }
     }
   }, [dispatch]);
 

@@ -8,7 +8,9 @@ import axios, { path as p, query as q } from "@/Utils/apiController";
 
 // Redux
 import { useSelector, useDispatch } from "react-redux";
-import { timerStart, timerFinish, timerNext, timerRefresh } from "@/Redux/timerReducer"
+import { timerStart, timerFinish, timerNext, timerRefresh } from "@/Redux/timerReducer";
+import { setPomos } from "@/Redux/pomosReducers";
+import { getTasks } from "@/Redux/taskReducer"
 
 // Ant Design
 import { Progress, Statistic, Typography } from "antd"
@@ -32,7 +34,7 @@ type Props = {
 };
 
 type StateType = "work" | "short_break" | "long_break"
-const durationMesure = 's';
+const durationLength = 's';
 const convertTime = (type: "m" | "s") => {
   let multiplier = 1000;
   if (type === "m") {
@@ -43,6 +45,7 @@ const convertTime = (type: "m" | "s") => {
 function CountdownComponent({ user }: Props) {
   const token = user.token;
   const timer = useSelector((state: RootState) => state.timer);
+  const task = useSelector((state: RootState) => state.task);
   const pomo = useSelector((state: RootState) => state.pomo);
 
   const dispatch = useDispatch();
@@ -61,11 +64,10 @@ function CountdownComponent({ user }: Props) {
   }, [pomoConfig.longBreakDuration, pomoConfig.shortBreakDuration, pomoConfig.workDuration]);
 
   // ------------------------------------------
-  // TODO make stop and pause
   const onStart = useCallback(async (type: StateType) => {
     setLoading(true);
     const now = moment();
-    const end = moment(now).add(duration(type), durationMesure);
+    const end = moment(now).add(duration(type), durationLength);
     console.log(type)
     try {
       const { data: response } = await axios(token).post(p.apiPomos, {
@@ -74,12 +76,12 @@ function CountdownComponent({ user }: Props) {
           end: end.utc().format(),
           type: type
         }
-      })
+      });
       dispatch(timerStart({
         end: end.valueOf(),
         pomoID: response.data.id,
         type: type
-      }))
+      }));
     } catch (err) {
       if (request.isAxiosError(err) && err.response) {
         const { data } = err.response;
@@ -98,19 +100,27 @@ function CountdownComponent({ user }: Props) {
   const onFinishPomo = useCallback(async () => {
     setLoading(true);
     try {
-      console.log("onPomoFinish")
-      const response = await axios(token).put(p.apiPomos + q.queryID(timer.pomoID), {
+      console.log("[onPomoFinish]");
+      const workTasks = task.data.filter((item: FetchedTaskType) => item.attributes.intermediate || item.attributes.complete);
+
+      const { data: res } = await axios(token).put(p.apiPomos + q.queryID(timer.pomoID), {
         data: {
           finish: true,
+          tasks: workTasks,
         }
       });
-      console.log(response.data);
+      console.log("update");
+      console.log(res.data);
+      const updateTask = await axios(user.token).get(p.apiTasks + "?" + q.queryPopulateSubTasks);
+      dispatch(getTasks(updateTask.data.data));
+      const response = await axios(token).get(p.apiPomos + "?" + q.queryFilterToday());
+      dispatch(setPomos({ pomos: response.data.data, total: response.data.meta.pagination.total }));
+
       let newType: StateType = "work";
       if (timer.type === "work") {
-        console.log("onfinish: ", pomo.total)
-        console.log(2 * pomoConfig.pomoBeforeLongBreak)
-        newType = (pomo.total > 0 && pomo.total % (2 * pomoConfig.pomoBeforeLongBreak) === 0) ? "long_break" : "short_break";
+        newType = (pomo.total > 0 && (pomo.total + 1) % (2 * pomoConfig.pomoBeforeLongBreak - 1) === 0) ? "long_break" : "short_break";
       }
+
       dispatch(timerNext(newType));
     } catch (err) {
       if (request.isAxiosError(err) && err.response) {
@@ -120,11 +130,12 @@ function CountdownComponent({ user }: Props) {
     }
 
     setLoading(false);
-  }, [dispatch, pomo.total, pomoConfig.pomoBeforeLongBreak, timer.pomoID, timer.type, token]);
+  }, [dispatch, pomo.total, pomoConfig.pomoBeforeLongBreak, task.data, timer.pomoID, timer.type, token]);
 
   // Controller functions =============================
   const checkPomoRunning = useCallback(async () => {
     setLoading(true);
+
     try {
       const { data: response } = await axios(token).get(p.apiPomos + "?" + q.queryFilterStatusrunning);
       const { data } = response;
@@ -154,15 +165,13 @@ function CountdownComponent({ user }: Props) {
         console.error("Multiples pomo running");
       } else {
         const lastPomo: PomoType = pomo.pomos[pomo.total - 1];
-
         if (lastPomo) {
           console.log(lastPomo);
           if (lastPomo.attributes.type !== "work") {
             dispatch(timerNext("work"));
           } else {
-            console.log("checkPomoRunning: ", pomo.total)
-            console.log(2 * pomoConfig.pomoBeforeLongBreak)
-            const newType = (pomo.total > 0 && pomo.total % (2 * pomoConfig.pomoBeforeLongBreak) === 0) ? "long_break" : "short_break";
+            const newType = (pomo.total > 0 && (pomo.total) % (2 * pomoConfig.pomoBeforeLongBreak - 1) === 0) ? "long_break" : "short_break";
+            console.log("   Next Type: ", newType)
             dispatch(timerNext(newType));
           }
         }
@@ -180,7 +189,7 @@ function CountdownComponent({ user }: Props) {
 
   const onChangeCountdown = useCallback((value: number | string | undefined) => {
     if (value !== undefined) {
-      const calculateDuration = duration(timer.type) * convertTime(durationMesure);
+      const calculateDuration = duration(timer.type) * convertTime(durationLength);
       const divide = Number(value) / calculateDuration;
       const percent = Math.round((1 - divide) * 100);
       setProgress(percent);
@@ -285,23 +294,11 @@ type GetStrokeProps = {
 const getStroke = ({ type, progress }: GetStrokeProps): string => {
   switch (type) {
     case "work":
-      if (progress > 0 && progress <= 100) {
-        return red[6];
-      } else {
-        return ""
-      }
+      return red[6];
     case "short_break":
-      if (progress > 0 && progress <= 100) {
-        return cyan[6];
-      } else {
-        return ""
-      }
+      return cyan[6];
     case "long_break":
-      if (progress > 0 && progress <= 100) {
-        return blue[6];
-      } else {
-        return ""
-      }
+      return blue[6];
     default:
       return red[5]
   }
