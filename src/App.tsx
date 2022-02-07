@@ -6,6 +6,7 @@ import './App.less';
 import Layout from "@/Components/Layout/Layout";
 import ClockPage from "@/Pages/ClockPage/Clock";
 import AuthPage from "@/Pages/AuthPage/AuthPage";
+import ProfilePage from "@/Pages/ProfilePage/Profile";
 import NotFoundPage from "@/Pages/NotFoundPage/NotFoundPage";
 
 function App() {
@@ -15,9 +16,10 @@ function App() {
     <Routes>
       {/* Rotas protegidas */}
       <Route path="/" element={<Layout />}>
-        <Route index element={<ClockPage />} />
+        <Route path="profile" element={<ProfilePage />} />
         {/* TODO - create page for history & reports*/}
         {/* TODO - create page for tasks & subtasks*/}
+        <Route index element={<ClockPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
       <Route path="/login" element={<AuthPage />} />

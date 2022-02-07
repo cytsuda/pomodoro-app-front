@@ -1,7 +1,9 @@
 import { useEffect, useState, useCallback } from "react";
+
 // Axios
 import request from "axios";
 import axios, { path as p } from "@/Utils/apiController";
+
 // Ant Desing
 import { Outlet, Link, Navigate, useLocation } from "react-router-dom";
 import { Layout, Menu } from 'antd';
@@ -47,9 +49,9 @@ const LayoutPage = () => {
     try {
       // res: {id, attributes}
       const { data: res } = await axios(token).get(p.apiUserConfig);
-      const { attributes } = res.data;
+      const { attributes, id } = res.data;
       if (attributes) {
-        dispatch(setPomoConfig(attributes.pomoConfig));
+        dispatch(setPomoConfig({ ...attributes.pomoConfig, id: id }));
       }
     } catch (err) {
       if (request.isAxiosError(err) && err.response) {

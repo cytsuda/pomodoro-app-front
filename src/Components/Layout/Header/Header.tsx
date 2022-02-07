@@ -1,4 +1,6 @@
 import React from "react";
+// React-Router
+import { Link } from "react-router-dom";
 
 // Redux
 import { useSelector } from "react-redux";
@@ -29,19 +31,19 @@ const HeaderComponent = (props: HeaderComponentType) => {
 
   >
     <Menu.Item key="1" icon={<UserOutlined />}>
-      <a target="_blank" rel="noopener noreferrer" href="https://www.antgroup.com">
+      <Link to="/profile">
         Profile
-      </a>
+      </Link>
     </Menu.Item>
     <Menu.Item key="2" icon={<DashboardOutlined />}>
-      <a target="_blank" rel="noopener noreferrer" href="https://www.aliyun.com">
+      <Link to="/preferences">
         Preferences
-      </a>
+      </Link>
     </Menu.Item>
     <Menu.Item key="3" icon={<SettingOutlined />}>
-      <a target="_blank" rel="noopener noreferrer" href="https://www.aliyun.com">
+      <Link to="/setting">
         Settings
-      </a>
+      </Link>
     </Menu.Item>
     <Menu.Divider />
     <Menu.Item key="logout" icon={<LogoutOutlined />} onClick={logout}>

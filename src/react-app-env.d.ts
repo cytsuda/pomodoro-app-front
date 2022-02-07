@@ -39,6 +39,7 @@ type CountdownType = {
 
 }
 type PomoConfigType = {
+  id: string;
   workDuration: number,
   shortBreakDuration: number,
   longBreakDuration: number,

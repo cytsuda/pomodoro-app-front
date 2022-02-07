@@ -4,6 +4,7 @@ const initialState: ControlType = {
   token: undefined,
   user: undefined,
   pomoConfig: {
+    id: "0",
     longBreakDuration: 15,
     shortBreakDuration: 5,
     workDuration: 25,

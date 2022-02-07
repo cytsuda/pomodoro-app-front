@@ -130,7 +130,7 @@ function CountdownComponent({ user }: Props) {
     }
 
     setLoading(false);
-  }, [dispatch, pomo.total, pomoConfig.pomoBeforeLongBreak, task.data, timer.pomoID, timer.type, token]);
+  }, [dispatch, pomo.total, pomoConfig.pomoBeforeLongBreak, task.data, timer.pomoID, timer.type, token, user.token]);
 
   // Controller functions =============================
   const checkPomoRunning = useCallback(async () => {
