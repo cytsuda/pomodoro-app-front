@@ -33,7 +33,7 @@ const PomoController = ({ className }: Props) => {
   const dispatch = useDispatch();
   const pomo = useSelector((state: RootState) => state.pomo);
   const user = useSelector((state: RootState) => state.user);
-  const { pomoConfig } = user;
+  const { pomoConfig } = user.userConfig;
   const getAllPomos = useCallback(async () => {
 
     try {
@@ -55,6 +55,20 @@ const PomoController = ({ className }: Props) => {
       getAllPomos();
     }
   }, [getAllPomos, user.token]);
+
+  const sortFunction = (array: any[]) => {
+    const sortArray = array.slice().sort((a: any, b: any) => {
+      if (a.id < b.id) {
+        return 1;
+      } else if (b.id < a.id) {
+        return -1;
+      } else {
+        return 0;
+      }
+    })
+    return sortArray;
+  }
+
   return (
     <>
       <Card
@@ -78,15 +92,12 @@ const PomoController = ({ className }: Props) => {
         <div className={clsx(className, classes.container)}>
           <Card title="Complete tasks and when">
             <Timeline mode="left">
-              {pomo.pomos.map((item: PomoType) => (
+              {sortFunction(pomo.pomos).map((item: PomoType) => (
                 <Timeline.Item key={item.id} color={getColor(item.attributes.type)} >
                   <p>{moment(item.attributes.end).format("DD/MM/YY HH:mm:ss")} - {item.attributes.type}</p>
-                  {console.log(item.attributes.tasks)}
-                  {(item.attributes.tasks && item.attributes.tasks.data.length > 0) ? item.attributes.tasks.data.map((task: FetchedTaskType) => (
+                  {(item.attributes.tasks && item.attributes.tasks.data.length > 0) && item.attributes.tasks.data.map((task: FetchedTaskType) => (
                     <p key={`task_` + task.id}>{task.attributes.title}</p>
-                  )) : (
-                    <p>No task associateds</p>
-                  )}
+                  ))}
                 </Timeline.Item>
               ))}
             </Timeline>

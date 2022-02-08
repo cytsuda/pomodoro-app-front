@@ -15,10 +15,16 @@ declare module "*.module.less" {
 type ControlType = {
   token?: string;
   user?: UserType;
+  userConfig: UserConfigType
+}
+
+type UserConfigType = {
+  id: string;
   pomoConfig: PomoConfigType;
   // preferenceCOnfig
-  // goalsCOnfig
+  goalsConfig: GoalsConfigType;
 }
+
 type UserType = {
   blocked: boolean;
   confirmed: boolean;
@@ -38,8 +44,13 @@ type CountdownType = {
   pomoID: string;
 
 }
+type GoalsConfigType = {
+  daily: number;
+  weekly: number;
+  monthly: number;
+}
+
 type PomoConfigType = {
-  id: string;
   workDuration: number,
   shortBreakDuration: number,
   longBreakDuration: number,

@@ -1,19 +1,40 @@
-import React from "react";
+import { useEffect } from "react";
+
+// Cookies
+import { useCookies } from "react-cookie";
 
 // Ant Design
 import { FormInstance, Form, Input, Button, Checkbox } from "antd";
-import { UserOutlined, LockOutlined } from '@ant-design/icons';
+import { UserOutlined, LockOutlined, SyncOutlined } from '@ant-design/icons';
 
 // Classes & Styles
 import classes from "./LoginTab.module.less";
 
 type LoginTabTypes = {
+  loading: boolean;
   form: FormInstance<any>;
   onSubmit: (values: any) => void;
 }
 
+
 const LoginTab = (props: LoginTabTypes) => {
-  const { form, onSubmit } = props;
+  const { form, onSubmit, loading } = props;
+  const [cookies] = useCookies();
+  const onKeyDown = (e: any) => {
+    if (e.keyCode === 13) {
+      onSubmit(form);
+    }
+  }
+
+  useEffect(() => {
+    if (cookies.login) {
+      form.setFieldsValue({
+        identifier: cookies.login.identifier,
+        remember: true
+      });
+    }
+  }, [cookies.login, form]);
+
   return (
     <div>
       <Form form={form} layout="vertical" onFinish={onSubmit} >
@@ -21,6 +42,7 @@ const LoginTab = (props: LoginTabTypes) => {
           <Input
             prefix={<UserOutlined className={classes.icon} />}
             placeholder="Username"
+            disabled={loading}
           />
         </Form.Item>
         <Form.Item
@@ -29,7 +51,10 @@ const LoginTab = (props: LoginTabTypes) => {
         >
           <Input.Password
             prefix={<LockOutlined className={classes.icon} />}
-            placeholder="Password" />
+            onKeyDown={onKeyDown}
+            placeholder="Password"
+            disabled={loading}
+          />
         </Form.Item>
         <Form.Item>
           {/* TODO - make remember me work */}
@@ -42,7 +67,7 @@ const LoginTab = (props: LoginTabTypes) => {
           </a>
         </Form.Item>
         <Form.Item >
-          <Button type="primary" htmlType="submit">Submit</Button>
+          <Button type="primary" htmlType="submit" disabled={loading}>{loading ? <SyncOutlined /> : "Submit"}</Button>
         </Form.Item>
       </Form>
     </div>

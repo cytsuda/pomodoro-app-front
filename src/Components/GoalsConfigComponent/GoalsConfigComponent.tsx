@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
 import clsx from "clsx";
+import produce from "immer";
 
 // Redux
 import { useSelector } from "react-redux";
@@ -11,19 +12,20 @@ import axios, { path as p, query as q } from "@/Utils/apiController"
 // AntDesign
 import { Typography, InputNumber, Divider, Button, Form, Skeleton } from "antd";
 import {
-  EditOutlined
+  EditOutlined, SyncOutlined
 } from '@ant-design/icons';
 
 // Classes & Styles
-import classes from "./PomoConfigComponent.module.less"
+import classes from "./GoalsConfigComponent.module.less"
 
 // Desconstructor
 const { Title } = Typography;
 
-const PomoConfigComponent = () => {
+
+const GoalsConfigComponent = () => {
   const { userConfig, token } = useSelector((state: RootState) => state.user);
   const [edit, setEdit] = useState<boolean>(false);
-  const { pomoConfig } = userConfig;
+  const { goalsConfig } = userConfig;
   const [form] = Form.useForm();
   // setFields
 
@@ -34,16 +36,15 @@ const PomoConfigComponent = () => {
     try {
       const res = await axios(token).put(p.apiUserConfig + q.queryID(e.id), {
         data: {
-          pomoConfig: {
-            workDuration: e.workDuration,
-            shortBreakDuration: e.shortBreakDuration,
-            longBreakDuration: e.longBreakDuration,
-            pomoBeforeLongBreak: e.pomoBeforeLongBreak,
-          }
+          goalsConfig: {
+            daily: e.daily,
+            weekly: e.weekly,
+            monthly: e.monthly,
+          },
         }
       });
       if (res) {
-        alert("Pomoconfig is update")
+        alert("Goals is update")
       }
     } catch (err) {
       if (request.isAxiosError(err) && err.response) {
@@ -53,27 +54,46 @@ const PomoConfigComponent = () => {
       }
     }
 
-    // pomoConfig.id
+    // userConfig.id
   }, [token]);
-
-  useEffect(() => {
-    if (pomoConfig.id !== "0" && token) {
-      form.setFieldsValue({ ...pomoConfig, id: userConfig.id });
+  const onRefresh = (value: "weekly" | "monthly") => {
+    const daily = form.getFieldValue("daily");
+    const weekly = form.getFieldValue("weekly");
+    const monthly = form.getFieldValue("monthly");
+    const old = {
+      daily,
+      weekly,
+      monthly,
     }
-  }, [form, pomoConfig, token, userConfig.id]);
+    const newValues = produce(old, (draft: GoalsConfigType) => {
+      draft.daily = daily;
+      if (value === "weekly") {
+        draft.weekly = 5 * daily;
+      }
+      if (value === "monthly") {
+        draft.monthly = 5 * 4 * daily;
+      }
+    });
+    form.setFieldsValue(newValues);
+  }
+  useEffect(() => {
+    if (userConfig.id !== "0" && token) {
+      form.setFieldsValue({ ...goalsConfig, id: userConfig.id });
+    }
+  }, [form, userConfig, token, goalsConfig]);
 
-  if (pomoConfig.id === "0") {
+  if (userConfig.id === "0") {
     return <div>LOADING...</div>
   }
   return (
     <Form
       className={classes.info}
-      name="pomo_config_form"
+      name="goals_config_form"
       form={form}
       onFinish={handleSave}
     >
       <div className={classes.infoCtrl}>
-        <Title level={4}>Pomo: {pomoConfig.id}</Title>
+        <Title level={4}>Goal</Title>
         <div className={classes.infoCtrlBtn}>
           <Button
             className={clsx(classes.infoCtrlBtnInner, edit && classes.active)}
@@ -99,11 +119,10 @@ const PomoConfigComponent = () => {
 
         <div className={clsx(classes.control, classes.row)}>
           <Typography className={classes.label}>
-            FOCUS DURATION
+            DAILY GOALS
           </Typography>
-
-          {pomoConfig.id !== 0 ? (
-            <Form.Item name="workDuration" className={classes.number}>
+          {userConfig.id !== 0 ? (
+            <Form.Item name="daily" className={classes.number}>
               <InputNumber
                 min={0}
                 className={clsx(classes.numberInput, !edit && classes.numberLabel)}
@@ -118,10 +137,11 @@ const PomoConfigComponent = () => {
 
         <div className={clsx(classes.control, classes.row)}>
           <Typography className={classes.label}>
-            SHORT BREAK DURATION
+            WEEKLY GOALS
           </Typography>
-          {pomoConfig.id !== 0 ? (
-            <Form.Item name="shortBreakDuration" className={classes.number}>
+          <SyncOutlined className={classes.labelIcon} onClick={() => onRefresh("weekly")} />
+          {userConfig.id !== 0 ? (
+            <Form.Item name="weekly" className={classes.number}>
               <InputNumber
                 min={0}
                 className={clsx(classes.numberInput, !edit && classes.numberLabel)}
@@ -136,10 +156,11 @@ const PomoConfigComponent = () => {
 
         <div className={clsx(classes.control, classes.row)}>
           <Typography className={classes.label}>
-            LONG BREAK DURATION
+            MONTHLY GOALS
           </Typography>
-          {pomoConfig.id !== 0 ? (
-            <Form.Item name="longBreakDuration" className={classes.number}>
+          <SyncOutlined className={classes.labelIcon} onClick={() => onRefresh("monthly")} />
+          {userConfig.id !== 0 ? (
+            <Form.Item name="monthly" className={classes.number}>
               <InputNumber
                 min={0}
                 className={clsx(classes.numberInput, !edit && classes.numberLabel)}
@@ -150,29 +171,10 @@ const PomoConfigComponent = () => {
             <Skeleton.Input style={{ width: 50 }} active={true} size="small" />
           )}
         </div>
-        <Divider className={classes.divider} />
-
-        <div className={clsx(classes.control, classes.row)}>
-          <Typography className={classes.label}>
-            TAKE A LONG BREAK AT
-          </Typography>
-          {pomoConfig.id !== 0 ? (
-            <Form.Item name="pomoBeforeLongBreak" className={classes.number} >
-              <InputNumber
-                min={0}
-                className={clsx(classes.numberInput, !edit && classes.numberLabel)}
-                disabled={!edit}
-              />
-            </Form.Item>
-          ) : (
-            <Skeleton.Input style={{ width: 50 }} active={true} size="small" />
-          )}
-        </div>
-
 
       </div>
     </Form >
   );
 }
 
-export default PomoConfigComponent;
+export default GoalsConfigComponent;

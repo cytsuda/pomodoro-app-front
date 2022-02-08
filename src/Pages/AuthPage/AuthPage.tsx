@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
 // Router
 import { Navigate } from "react-router-dom";
@@ -44,13 +44,19 @@ type LoginType = {
   remember: boolean;
 }
 
+type TabType = {
+  tab: string;
+  loading: boolean;
+}
+
 const LoginPage = () => {
-  const [tab, setTab] = useState("login");
-  const [cookie, setCookie] = useCookies();
+  const [tab, setTab] = useState<TabType>({ tab: "login", loading: false });
+  const [cookie, setCookie, removeCookies] = useCookies();
   const [form] = Form.useForm();
   const dispatch = useDispatch();
 
   const onLoginSubmit = async (value: LoginType) => {
+    setTab(prev => ({ ...prev, loading: true }));
     try {
       const res = await axios().post(p.apiLogin, {
         identifier: value.identifier,
@@ -62,17 +68,22 @@ const LoginPage = () => {
         user: user
       }));
       setCookie("token", jwt, { path: "/", secure: true });
+      if (value.remember) {
+        setCookie("login", { identifier: value.identifier, remember: true }, { path: "/", secure: true });
+      } else {
+        removeCookies("login", { path: "/", secure: true });
+      }
     } catch (err) {
       if (request.isAxiosError(err) && err.response) {
         const { error } = err.response.data;
         console.log(error)
       }
     }
+    setTab(prev => ({ ...prev, loading: false }));
   }
 
   const onRegisterSubmit = async (value: any) => {
-    console.log("Register submit");
-    console.log(value);
+    setTab(prev => ({ ...prev, loading: true }));
     try {
       const res = await axios().post(p.apiRegister, {
         username: value.username,
@@ -91,12 +102,14 @@ const LoginPage = () => {
         console.log(error)
       }
     }
+    setTab(prev => ({ ...prev, loading: false }));
   }
 
   const content: ContentType = {
-    login: <LoginTab form={form} onSubmit={onLoginSubmit} />,
-    register: <RegisterTab form={form} onSubmit={onRegisterSubmit} />
+    login: <LoginTab form={form} onSubmit={onLoginSubmit} loading={tab.loading} />,
+    register: <RegisterTab form={form} onSubmit={onRegisterSubmit} loading={tab.loading} />
   }
+
 
   if (cookie.token) {
     return <Navigate to="/" replace />
@@ -106,14 +119,14 @@ const LoginPage = () => {
     <div className={classes.container}>
       <Card className={classes.card} title="this is the login page"
         tabList={tabList}
-        activeTabKey={tab}
-        onTabChange={key => {
-          setTab(key);
+        activeTabKey={tab.tab}
+        onTabChange={(key: string) => {
+          setTab(prev => ({ ...prev, tab: key }))
         }}
       >
-        {content[tab]}
+        {content[tab.tab]}
       </Card>
-    </div>
+    </div >
   );
 }
 

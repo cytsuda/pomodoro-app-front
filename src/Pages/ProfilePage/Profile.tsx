@@ -7,11 +7,12 @@ import { useSelector } from 'react-redux';
 // import { getUser, setPomoConfig } from "@/Redux/userReducer";
 
 // AntDesign
-import { Row, Col, Avatar, Typography, Input, InputNumber, Divider } from "antd";
-import { UserOutlined, EditOutlined, PlusCircleOutlined, MinusCircleOutlined } from '@ant-design/icons';
+import { Row, Col, Avatar, Typography, Input } from "antd";
+import { UserOutlined, EditOutlined } from '@ant-design/icons';
 
 // Custom Components
 import PomoConfigComponent from "@/Components/PomoConfigComponent/PomoConfigComponent";
+import GoalsConfigComponent from "@/Components/GoalsConfigComponent/GoalsConfigComponent";
 
 // Classes and Styles
 import classes from "./Profile.module.less";
@@ -34,7 +35,6 @@ const ProfilePage = () => {
       </div>
     )
   }
-  const daily = 8;
   return (
     <div>
       <Row gutter={[32, 24]}>
@@ -81,71 +81,9 @@ const ProfilePage = () => {
         </Col>
         <Col span={8}>
           <PomoConfigComponent />
-
         </Col>
         <Col span={8}>
-          <div className={classes.info}>
-            <div className={classes.infoCtrl}>
-              <Title level={4}>Goals</Title>
-              <EditOutlined
-                className={clsx(classes.infoCtrlEdit, editing && classes.active)}
-                onClick={() => setEditing(prev => prev === "POMO" ? undefined : "POMO")}
-              />
-            </div>
-            <div className={classes.box}>
-              <div className={clsx(classes.control, classes.row)}>
-                <Typography className={classes.label}>
-                  DAILY POMOS
-                </Typography>
-                <div className={classes.number}>
-                  {editing === "POMO" ? (
-                    <>
-                      <MinusCircleOutlined className={clsx(classes.numberIcon, classes.left)} />
-                      <InputNumber className={classes.numberInput} min={1} keyboard={true} defaultValue={daily} />
-                      <PlusCircleOutlined className={clsx(classes.numberIcon, classes.right)} />
-                    </>
-                  ) : (
-                    <InputNumber className={clsx(classes.numberInput, classes.numberLabel)} disabled defaultValue={daily} />
-                  )}
-                </div>
-              </div>
-              <Divider className={classes.dividerNumber} />
-              <div className={clsx(classes.control, classes.row)}>
-                <Typography className={classes.label}>
-                  WEEKLY POMOS
-                </Typography>
-                <div className={classes.number}>
-                  {editing === "POMO" ? (
-                    <>
-                      <MinusCircleOutlined className={clsx(classes.numberIcon, classes.left)} />
-                      <InputNumber className={classes.numberInput} min={1} keyboard={true} defaultValue={daily * 5} />
-                      <PlusCircleOutlined className={clsx(classes.numberIcon, classes.right)} />
-                    </>
-                  ) : (
-                    <InputNumber className={clsx(classes.numberInput, classes.numberLabel)} disabled defaultValue={daily * 5} />
-                  )}
-                </div>
-              </div>
-              <Divider className={classes.dividerNumber} />
-              <div className={clsx(classes.control, classes.row)}>
-                <Typography className={classes.label}>
-                  MONTHY POMOS
-                </Typography>
-                <div className={classes.number}>
-                  {editing === "POMO" ? (
-                    <>
-                      <MinusCircleOutlined className={clsx(classes.numberIcon, classes.left)} />
-                      <InputNumber className={classes.numberInput} min={1} keyboard={true} defaultValue={daily * 5 * 4} />
-                      <PlusCircleOutlined className={clsx(classes.numberIcon, classes.right)} />
-                    </>
-                  ) : (
-                    <InputNumber className={clsx(classes.numberInput, classes.numberLabel)} disabled defaultValue={daily * 5} />
-                  )}
-                </div>
-              </div>
-
-            </div>
-          </div>
+          <GoalsConfigComponent />
         </Col>
 
       </Row>

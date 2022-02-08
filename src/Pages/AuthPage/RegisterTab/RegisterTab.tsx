@@ -8,11 +8,12 @@ import classes from "./RegisterTab.module.less";
 
 type RegisterTabTypes = {
   form: FormInstance<any>;
+  loading: boolean;
   onSubmit: (values: any) => void;
 }
 
 const RegisterTab = (props: RegisterTabTypes) => {
-  const { form, onSubmit } = props;
+  const { form, onSubmit, loading } = props;
   return (
     <div className={classes.container}>
       <Form
@@ -26,7 +27,7 @@ const RegisterTab = (props: RegisterTabTypes) => {
           label="Username"
           rules={[{ required: true, message: 'Please input your username.', whitespace: true }]}
         >
-          <Input placeholder="Your username" />
+          <Input placeholder="Your username" disabled={loading} />
         </Form.Item>
         <Form.Item
           name="email"
@@ -43,7 +44,9 @@ const RegisterTab = (props: RegisterTabTypes) => {
           ]}
         >
           <Input
-            placeholder="Your email" />
+            placeholder="Your email"
+            disabled={loading}
+          />
         </Form.Item>
         <Form.Item
           name="password"
@@ -56,7 +59,9 @@ const RegisterTab = (props: RegisterTabTypes) => {
           ]}
           hasFeedback
         >
-          <Input.Password />
+          <Input.Password
+            disabled={loading}
+          />
         </Form.Item>
 
         <Form.Item
@@ -79,7 +84,9 @@ const RegisterTab = (props: RegisterTabTypes) => {
             }),
           ]}
         >
-          <Input.Password />
+          <Input.Password
+            disabled={loading}
+          />
         </Form.Item>
         <div className={classes.buttons}>
           <Form.Item className={classes.button} >
@@ -88,6 +95,7 @@ const RegisterTab = (props: RegisterTabTypes) => {
               htmlType="submit"
               size="large"
               shape="round"
+              disabled={loading}
             >
               Submit
             </Button>
@@ -99,6 +107,7 @@ const RegisterTab = (props: RegisterTabTypes) => {
               htmlType="reset"
               size="large"
               shape="round"
+              disabled={loading}
             >
               Reset
             </Button>

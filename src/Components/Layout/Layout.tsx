@@ -51,7 +51,11 @@ const LayoutPage = () => {
       const { data: res } = await axios(token).get(p.apiUserConfig);
       const { attributes, id } = res.data;
       if (attributes) {
-        dispatch(setPomoConfig({ ...attributes.pomoConfig, id: id }));
+        dispatch(setPomoConfig({
+          id: id,
+          pomoConfig: attributes.pomoConfig,
+          goalsConfig: attributes.goalsConfig,
+        }));
       }
     } catch (err) {
       if (request.isAxiosError(err) && err.response) {

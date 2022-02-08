@@ -3,16 +3,22 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 const initialState: ControlType = {
   token: undefined,
   user: undefined,
-  pomoConfig: {
+  userConfig: {
     id: "0",
-    longBreakDuration: 15,
-    shortBreakDuration: 5,
-    workDuration: 25,
-    pomoBeforeLongBreak: 4,
+    pomoConfig: {
+      longBreakDuration: 15,
+      shortBreakDuration: 5,
+      workDuration: 25,
+      pomoBeforeLongBreak: 4,
+    },
+    goalsConfig: {
+      daily: 8,
+      weekly: 8 * 5,
+      monthly: 8 * 5 * 4,
+    }
   }
 }
 type UserToken = { token: string, user: UserType }
-
 export const userSlice = createSlice({
   name: 'control',
   initialState,
@@ -25,8 +31,10 @@ export const userSlice = createSlice({
       state.token = action.payload.token;
       state.user = action.payload.user
     },
-    setPomoConfig: (state: ControlType, action: PayloadAction<PomoConfigType>) => {
-      state.pomoConfig = action.payload;
+    setPomoConfig: (state: ControlType, action: PayloadAction<UserConfigType>) => {
+      state.userConfig.pomoConfig = action.payload.pomoConfig;
+      state.userConfig.goalsConfig = action.payload.goalsConfig;
+      state.userConfig.id = action.payload.id;
     }
   },
 })

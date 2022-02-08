@@ -53,7 +53,7 @@ function CountdownComponent({ user }: Props) {
   const [progress, setProgress] = useState<number>(0);
 
   // Calculate Duration base on type of pomo;
-  const { pomoConfig } = user;
+  const { pomoConfig } = user.userConfig;
   const duration = useCallback((value: StateType) => {
     const d = {
       work: pomoConfig.workDuration,
@@ -101,8 +101,7 @@ function CountdownComponent({ user }: Props) {
     setLoading(true);
     try {
       console.log("[onPomoFinish]");
-      const workTasks = task.data.filter((item: FetchedTaskType) => item.attributes.intermediate || item.attributes.complete);
-
+      const workTasks = task.data.filter((item: FetchedTaskType) => item.attributes.intermediate || (!item.attributes.completeDate && item.attributes.complete));
       const { data: res } = await axios(token).put(p.apiPomos + q.queryID(timer.pomoID), {
         data: {
           finish: true,
