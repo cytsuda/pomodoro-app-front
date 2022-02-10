@@ -19,7 +19,8 @@ ReactDOM.render(
         <App />
       </BrowserRouter>
     </Provider>
-  </CookiesProvider>,
+  </CookiesProvider>
+  ,
   document.getElementById('root')
 );
 

@@ -10,7 +10,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { getTasks, loadingTask, failTask } from "@/Redux/taskReducer"
 
 // Ant Design
-import { Typography, Button, Input } from "antd";
+import { Typography, Button, Input, Divider, notification } from "antd";
 import { SyncOutlined } from '@ant-design/icons';
 
 // Classes & Styles
@@ -37,6 +37,17 @@ const TaskListComponent = () => {
   // Ref
   const inputRef = useRef<Input>(null);
 
+  // ------------------------------------------
+  const openNotification = ({ message, description, type }: MsgProps) => {
+    notification[type]({
+      message: message,
+      description: description,
+      placement: "topRight",
+    });
+  }
+
+  // ------------------------------------------
+
   // Functions
   const handleTaskTitle = (e: React.FormEvent<HTMLInputElement>) => {
     const target = e.currentTarget as HTMLInputElement;
@@ -45,7 +56,6 @@ const TaskListComponent = () => {
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
-      console.log("Send task title to add");
       createNewTask(taskTitle);
       setTaskTitle("");
       setFocus(false);
@@ -59,7 +69,6 @@ const TaskListComponent = () => {
     if (!taskTitle && inputRef.current) {
       inputRef.current.focus();
     } else {
-      console.log("Send task title to add");
       createNewTask(taskTitle);
       setTaskTitle("");
       setFocus(false);
@@ -72,34 +81,63 @@ const TaskListComponent = () => {
   const createNewTask = async (text: string) => {
     dispatch(loadingTask());
     try {
-      console.log("trying to push")
-      console.log(text)
-      const response = await axios(user.token).post(p.apiTasks, {
+      await axios(user.token).post(p.apiTasks, {
         data: { title: text }
       });
-      console.log("SUCCESS");
-      console.log(response);
       const res = await axios(user.token).get(p.apiTasks + "?" + q.queryPopulateSubTasks);
       dispatch(getTasks(res.data.data));
+      openNotification({
+        type: 'success',
+        message: "Task successfully created",
+        description: ``
+      });
     } catch (err) {
       if (request.isAxiosError(err) && err.response) {
         const { error } = err.response.data;
-        console.log(error)
+        openNotification({
+          type: 'error',
+          message: "An error has occurred",
+          description: `Error: ${error.message}`
+        });
+      } else {
+        console.log(err);
+        openNotification({
+          type: 'error',
+          message: "An error has occurred",
+          description: `Error: unknown error.`
+        });
       }
       dispatch(failTask());
     }
   }
 
-  const getAllTask = useCallback(async () => {
+  const getAllTask = useCallback(async (auto: boolean = false) => {
     dispatch(loadingTask());
     try {
       const res = await axios(user.token).get(p.apiTasks + "?" + q.queryPopulateSubTasks);
       dispatch(getTasks(res.data.data));
-
+      if (!auto) {
+        openNotification({
+          type: 'success',
+          message: "All tasks successfully loaded ",
+          description: ``
+        });
+      }
     } catch (err) {
       if (request.isAxiosError(err) && err.response) {
         const { error } = err.response.data;
-        console.log(error)
+        openNotification({
+          type: 'error',
+          message: "An error has occurred",
+          description: `Error: ${error.message}`
+        });
+      } else {
+        console.log(err);
+        openNotification({
+          type: 'error',
+          message: "An error has occurred",
+          description: `Error: unknown error.`
+        });
       }
       dispatch(failTask());
     }
@@ -108,7 +146,7 @@ const TaskListComponent = () => {
 
   useEffect(() => {
     if (user && user.token) {
-      getAllTask();
+      getAllTask(true);
     }
   }, [getAllTask, user]);
 
@@ -117,10 +155,10 @@ const TaskListComponent = () => {
     <div className={classes.container} >
       <div className={classes.top}>
         <Title level={5}>
-          List of tasks {tasks && "- " + tasks.data.length + " tasks"}
+          List of tasks {tasks && "- " + tasks.data.filter((item: FetchedTaskType) => !item.attributes.completeDate).length + " tasks"}
         </Title>
         <div className={classes.refresh}>
-          <Button shape="circle" icon={<SyncOutlined spin={tasks.loading} />} onClick={getAllTask} />
+          <Button shape="circle" icon={<SyncOutlined spin={tasks.loading} />} onClick={() => getAllTask(false)} />
         </div>
         <div className={classes.task}
           onFocus={() => setFocus(true)}
@@ -142,10 +180,18 @@ const TaskListComponent = () => {
           </Button>
         </div>
       </div>
-      <div className={classes.content}>
-        {tasks && tasks.data.filter((item: FetchedTaskType) => !item.attributes.completeDate).map((item: FetchedTaskType) => (
-          <TaskItem id={item.id} data={item.attributes} key={item.id} />
-        ))}
+      <div>
+        <div className={classes.content}>
+          {tasks && tasks.data.filter((item: FetchedTaskType) => !item.attributes.completeDate).map((item: FetchedTaskType) => (
+            <TaskItem id={item.id} data={item.attributes} key={item.id} />
+          ))}
+        </div>
+        <Divider orientation="left">Complete Tasks</Divider>
+        <div className={classes.content}>
+          {tasks && tasks.data.filter((item: FetchedTaskType) => item.attributes.completeDate).map((item: FetchedTaskType) => (
+            <TaskItem disabled id={item.id} data={item.attributes} key={item.id} />
+          ))}
+        </div>
       </div>
     </div>
   )

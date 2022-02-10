@@ -10,10 +10,8 @@ import request from "axios";
 import axios, { path as p, query as q } from "@/Utils/apiController"
 
 // AntDesign
-import { Typography, InputNumber, Divider, Button, Form, Skeleton } from "antd";
-import {
-  EditOutlined, SyncOutlined
-} from '@ant-design/icons';
+import { Typography, InputNumber, Divider, Button, Form, Skeleton, notification } from "antd";
+import { EditOutlined, SyncOutlined } from '@ant-design/icons';
 
 // Classes & Styles
 import classes from "./GoalsConfigComponent.module.less"
@@ -21,17 +19,32 @@ import classes from "./GoalsConfigComponent.module.less"
 // Desconstructor
 const { Title } = Typography;
 
+type MsgProps = {
+  message: string;
+  description: string;
+  type: "success" | "info" | "warning" | "error";
+}
 
 const GoalsConfigComponent = () => {
   const { userConfig, token } = useSelector((state: RootState) => state.user);
   const [edit, setEdit] = useState<boolean>(false);
   const { goalsConfig } = userConfig;
   const [form] = Form.useForm();
-  // setFields
+
+  // ------------------------------------------
+
+  const openNotification = ({ message, description, type }: MsgProps) => {
+    notification[type]({
+      message: message,
+      description: description,
+      placement: "topRight",
+    });
+  }
+
+  // ------------------------------------------
 
 
   const handleSave = useCallback(async (e) => {
-    setEdit(false);
     // TODO - add feedback when something is success / fail on change
     try {
       const res = await axios(token).put(p.apiUserConfig + q.queryID(e.id), {
@@ -44,18 +57,27 @@ const GoalsConfigComponent = () => {
         }
       });
       if (res) {
-        alert("Goals is update")
+        openNotification({
+          message: "Goals is successfully updated ",
+          description: "",
+          type: "success"
+        });
       }
+      setEdit(false);
     } catch (err) {
       if (request.isAxiosError(err) && err.response) {
         const { data } = err.response;
         const { error } = data;
-        console.log(error)
+        openNotification({
+          message: "An error has occurred.",
+          description: `Error: ${error.message}`,
+          type: "error"
+        });
       }
     }
 
-    // userConfig.id
   }, [token]);
+
   const onRefresh = (value: "weekly" | "monthly") => {
     const daily = form.getFieldValue("daily");
     const weekly = form.getFieldValue("weekly");

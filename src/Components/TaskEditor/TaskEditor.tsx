@@ -20,6 +20,7 @@ import {
   InputNumber,
   Tooltip,
   Button,
+  notification
 } from "antd"
 import {
   EditFilled
@@ -43,11 +44,23 @@ const TaskEditor = (props: TaskEditorPropType) => {
 
   const [form] = Form.useForm();
   const token = useSelector((state: RootState) => state.user.token);
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
   const initialValues = produce(data, (draft: TaskType) => {
     draft.remind = data.remind && moment(data.remind);
   });
+
+  // ------------------------------------------
+
+  const openNotification = ({ message, description, type }: MsgProps) => {
+    notification[type]({
+      message: message,
+      description: description,
+      placement: "topRight",
+    });
+  }
+
+  // ------------------------------------------
 
   const handleOk = async (value: any) => {
     dispatch(loadingTask());
@@ -66,11 +79,27 @@ const TaskEditor = (props: TaskEditorPropType) => {
       const res = await axios(token).get(p.apiTasks + "?" + q.queryPopulateSubTasks);
       dispatch(getTasks(res.data.data));
       setOpen(false);
+
+      openNotification({
+        type: updateTask.complete ? 'success' : "info",
+        message: `Task successfully updated ${updateTask.complete ? 'and completed' : ""}`,
+        description: ``
+      });
+
     } catch (err) {
-      console.log("TaskItem Error");
       if (request.isAxiosError(err) && err.response) {
         const { error } = err.response.data;
-        console.log(error)
+        openNotification({
+          type: 'error',
+          message: "An error has occurred",
+          description: `Error: ${error.message}`
+        });
+      } else {
+        openNotification({
+          type: 'error',
+          message: "An error has occurred",
+          description: `Error: unknown error.`
+        });
       }
       dispatch(failTask());
       setOpen(false);
@@ -130,13 +159,29 @@ const TaskEditor = (props: TaskEditorPropType) => {
           >
             <Input.TextArea rows={6} placeholder="Notes, Comments & Observations" style={{ resize: 'none' }} />
           </Form.Item>
+
           <Form.Item
-            name="expectPomo"
             label="Number of pomos"
             tooltip="Number of Pomos expected to complete this task."
+            style={{ marginBottom: 0 }}
           >
-            <InputNumber placeholder="0" min={0} />
+            <Form.Item
+              name="expectPomo"
+              rules={[{ required: true }]}
+              style={{ display: 'inline-block' }}
+            >
+              <InputNumber placeholder="Input birth year" />
+            </Form.Item>
+            <Tooltip title="Worked done">
+              <Form.Item
+                name="workedPomo"
+                style={{ display: 'inline-block', margin: '0 8px' }}
+              >
+                <InputNumber placeholder="0" disabled />
+              </Form.Item>
+            </Tooltip>
           </Form.Item>
+
           <Form.Item
             name="remind"
             label="Remind"

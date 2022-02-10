@@ -14,10 +14,10 @@ The system
 App needs to load user preference and change behavior;
 
 - [ ] - System Preference: sounds, types of notifications, date and time format and possible other stuffs
-- [ ] - Pomo preference: pomo duration, short break duration, long break duration, the quantity of pomos needs to be completed before the start of the long break.
-- [ ] - Goal (Objectives) preference: daily pomos,weekly pomos and monthly pomos
 - [ ] - History
-- [ ] - List of Todos
+- ✔️ Pomo preference: pomo duration, short break duration, long break duration, the quantity of pomos needs to be completed before the start of the long break.
+- ✔️ Goal (Objectives) preference: daily pomos,weekly pomos and monthly pomos
+- ✔️ List of Todos
 
 ### Possible objects
 

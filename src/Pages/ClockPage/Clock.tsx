@@ -4,6 +4,7 @@ import { Typography } from "antd";
 // Custom components
 import PomoController from "@/Components/PomoController/PomoController";
 import TaskListComponent from "@/Components/TaskList/TaskList";
+import TimeLineComponent from "@/Components/TimeLineComponent/TimeLineComponent";
 
 // Classes & Styles
 import classes from "./Clock.module.less";
@@ -23,6 +24,7 @@ const ClockPage = () => {
         <div className={classes.big}>
           <TaskListComponent />
         </div>
+        <TimeLineComponent className={classes.full} />
       </div >
     </div >
   );

@@ -12,6 +12,11 @@ declare module "*.module.less" {
   export default classes;
 }
 
+type MsgProps = {
+  message: string;
+  description: string;
+  type: "success" | "info" | "warning" | "error";
+}
 type ControlType = {
   token?: string;
   user?: UserType;

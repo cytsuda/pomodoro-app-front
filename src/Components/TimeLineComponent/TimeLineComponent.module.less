@@ -1,0 +1,45 @@
+@import "~antd/lib/style/themes/dark.less";
+
+.card {
+  height: 100%;
+  max-width: 100%;
+  &Title {
+    display: flex;
+    justify-content: space-between;
+    &Text {
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+    &Date {
+      color: @disabled-color;
+    }
+  }
+  &Info {
+    margin-top: 12px;
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+.time {
+  display: flex;
+  flex-direction: column;
+  &Start {
+    color: inherit;
+  }
+  &End {
+    color: inherit;
+  }
+}
+
+.icon {
+  &Work {
+    color: @red-5;
+  }
+  &Short {
+    color: @blue-5;
+  }
+  &Long {
+    color: @cyan-5;
+  }
+}

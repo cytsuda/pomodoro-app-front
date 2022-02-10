@@ -1,17 +1,14 @@
 @import "~antd/lib/style/themes/dark.less";
-
-.container {
+.card {
   height: 100%;
-}
-
-.info {
-  margin-top: 12px;
-  padding-top: 12px;
-  margin-bottom: 12px;
-  padding-bottom: 12px;
-  padding-left: 12px;
-  display: flex;
-  flex-direction: column;
-  border-bottom: 1px solid @border-color-split;
-  border-top: 1px solid @border-color-split;
+  max-width: 100%;
+  &Title {
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+  &Info {
+    margin-top: 12px;
+    display: flex;
+    flex-direction: column;
+  }
 }

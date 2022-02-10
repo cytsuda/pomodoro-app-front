@@ -6,11 +6,11 @@ import axios, { path as p } from "@/Utils/apiController";
 
 // Ant Desing
 import { Outlet, Link, Navigate, useLocation } from "react-router-dom";
-import { Layout, Menu } from 'antd';
+import { Layout, Menu, notification } from 'antd';
 import {
   HomeOutlined,
   ProjectOutlined,
-  ClockCircleOutlined,
+  // ClockCircleOutlined,
 } from '@ant-design/icons';
 
 // Reducer
@@ -31,12 +31,30 @@ import classes from "./Layout.module.less";
 // Desconstructor
 const { Content, Sider } = Layout;
 
+type MsgProps = {
+  message: string;
+  description: string;
+  type: "success" | "info" | "warning" | "error";
+}
+
 const LayoutPage = () => {
   const [cookie, , removeCookie] = useCookies();
   const location = useLocation();
   const dispatch = useDispatch();
 
   const [collapse, setCollapse] = useState<boolean>(false);
+
+  // ------------------------------------------
+
+  const openNotification = ({ message, description, type }: MsgProps) => {
+    notification[type]({
+      message: message,
+      description: description,
+      placement: "topRight",
+    });
+  }
+
+  // ------------------------------------------
 
 
   const loadUserHandler = useCallback(async (token: string) => {
@@ -57,10 +75,28 @@ const LayoutPage = () => {
           goalsConfig: attributes.goalsConfig,
         }));
       }
+      if (!res.data) {
+        openNotification({
+          type: 'error',
+          message: "Problem with pomo config",
+          description: ``
+        });
+      }
     } catch (err) {
       if (request.isAxiosError(err) && err.response) {
         const { error } = err.response.data;
-        console.log(error)
+        openNotification({
+          type: 'error',
+          message: "An error has occurred",
+          description: `Error: ${error.message}`
+        });
+      } else {
+        console.log(err);
+        openNotification({
+          type: 'error',
+          message: "An error has occurred",
+          description: `Error: unknown error.`
+        });
       }
     }
   }, [dispatch]);
@@ -90,7 +126,7 @@ const LayoutPage = () => {
                 Home
               </Link>
             </Menu.Item>
-            <Menu.Item key="2" icon={<ClockCircleOutlined />} >
+            {/* <Menu.Item key="2" icon={<ClockCircleOutlined />} >
               <Link to="/clock">
                 Clock
               </Link>
@@ -99,7 +135,7 @@ const LayoutPage = () => {
               <Link to="/projects">
                 Projects
               </Link>
-            </Menu.Item>
+            </Menu.Item> */}
             <Menu.Divider style={{ marginTop: "auto" }} />
             <Menu.Item key="4" icon={<ProjectOutlined />} >
               <a href="https://docs.strapi.io/developer-docs/latest/getting-started/introduction.html">

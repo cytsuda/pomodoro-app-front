@@ -9,7 +9,7 @@ import request from "axios";
 import axios, { path as p, query as q } from "@/Utils/apiController"
 
 // AntDesign
-import { Typography, InputNumber, Divider, Button, Form, Skeleton } from "antd";
+import { Typography, InputNumber, Divider, Button, Form, Skeleton, notification } from "antd";
 import {
   EditOutlined
 } from '@ant-design/icons';
@@ -20,12 +20,29 @@ import classes from "./PomoConfigComponent.module.less"
 // Desconstructor
 const { Title } = Typography;
 
+type MsgProps = {
+  message: string;
+  description: string;
+  type: "success" | "info" | "warning" | "error";
+}
+
 const PomoConfigComponent = () => {
   const { userConfig, token } = useSelector((state: RootState) => state.user);
   const [edit, setEdit] = useState<boolean>(false);
   const { pomoConfig } = userConfig;
   const [form] = Form.useForm();
-  // setFields
+
+  // ------------------------------------------
+
+  const openNotification = ({ message, description, type }: MsgProps) => {
+    notification[type]({
+      message: message,
+      description: description,
+      placement: "topRight",
+    });
+  }
+
+  // ------------------------------------------
 
 
   const handleSave = useCallback(async (e) => {
@@ -43,13 +60,28 @@ const PomoConfigComponent = () => {
         }
       });
       if (res) {
-        alert("Pomoconfig is update")
+        openNotification({
+          type: 'success',
+          message: "PomoConfig saved successfully.",
+          description: ""
+        });
       }
+      setEdit(false);
     } catch (err) {
       if (request.isAxiosError(err) && err.response) {
         const { data } = err.response;
         const { error } = data;
-        console.log(error)
+        openNotification({
+          type: 'error',
+          message: "An error has occurred",
+          description: `Error: ${error.message}`
+        });
+      } else {
+        openNotification({
+          type: 'error',
+          message: "An error has occurred",
+          description: `Error: unknown error.`
+        });
       }
     }
 

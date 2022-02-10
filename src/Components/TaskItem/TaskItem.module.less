@@ -16,17 +16,27 @@
 }
 
 .checkbox {
+  user-select: none;
   margin-left: 8px;
+  cursor: pointer;
   &.checked {
     color: @primary-color;
   }
 }
+.disabled {
+  color: @disabled-color;
+}
 
-.pomos {
+.end {
   margin-left: auto;
-  border: 1px solid @border-color-split;
-  padding: 2px 8px;
-  border-radius: 4px;
+  &Pomos {
+    border: 1px solid @border-color-split;
+    padding: 2px 8px;
+    border-radius: 4px;
+  }
+  &Text {
+    margin-left: 16px;
+  }
 }
 
 .icons {

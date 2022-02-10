@@ -13,7 +13,7 @@ import { setPomos } from "@/Redux/pomosReducers";
 import { getTasks } from "@/Redux/taskReducer"
 
 // Ant Design
-import { Progress, Statistic, Typography } from "antd"
+import { Progress, Statistic, Typography, notification } from "antd"
 import { cyan, blue, red } from "@ant-design/colors";
 import { SettingOutlined } from '@ant-design/icons';
 
@@ -33,6 +33,7 @@ type Props = {
   user: ControlType;
 };
 
+
 type StateType = "work" | "short_break" | "long_break"
 const durationLength = 's';
 const convertTime = (type: "m" | "s") => {
@@ -44,9 +45,7 @@ const convertTime = (type: "m" | "s") => {
 }
 function CountdownComponent({ user }: Props) {
   const token = user.token;
-  const timer = useSelector((state: RootState) => state.timer);
-  const task = useSelector((state: RootState) => state.task);
-  const pomo = useSelector((state: RootState) => state.pomo);
+  const { timer, task, pomo } = useSelector((state: RootState) => state);
 
   const dispatch = useDispatch();
   const [loading, setLoading] = useState<boolean>(false);
@@ -64,11 +63,21 @@ function CountdownComponent({ user }: Props) {
   }, [pomoConfig.longBreakDuration, pomoConfig.shortBreakDuration, pomoConfig.workDuration]);
 
   // ------------------------------------------
+
+  const openNotification = ({ message, description, type }: MsgProps) => {
+    notification[type]({
+      message: message,
+      description: description,
+      placement: "topLeft",
+    });
+  }
+
+  // ------------------------------------------
+
   const onStart = useCallback(async (type: StateType) => {
     setLoading(true);
     const now = moment();
     const end = moment(now).add(duration(type), durationLength);
-    console.log(type)
     try {
       const { data: response } = await axios(token).post(p.apiPomos, {
         data: {
@@ -82,14 +91,31 @@ function CountdownComponent({ user }: Props) {
         pomoID: response.data.id,
         type: type
       }));
+
+      openNotification({
+        type: 'warning',
+        message: type === "work" ? "Focus Start" : "Break Start",
+        description: ""
+      });
+
     } catch (err) {
       if (request.isAxiosError(err) && err.response) {
         const { data } = err.response;
         const { error } = data;
-        console.log(error)
+        openNotification({
+          type: 'error',
+          message: "An error has occurred",
+          description: `Error: ${error.message}`
+        });
+      } else {
+        console.log(err);
+        openNotification({
+          type: 'error',
+          message: "An error has occurred",
+          description: `Error: unknown error.`
+        });
       }
     }
-
     setLoading(false);
   }, [dispatch, duration, token]);
 
@@ -100,16 +126,14 @@ function CountdownComponent({ user }: Props) {
   const onFinishPomo = useCallback(async () => {
     setLoading(true);
     try {
-      console.log("[onPomoFinish]");
       const workTasks = task.data.filter((item: FetchedTaskType) => item.attributes.intermediate || (!item.attributes.completeDate && item.attributes.complete));
-      const { data: res } = await axios(token).put(p.apiPomos + q.queryID(timer.pomoID), {
+      await axios(token).put(p.apiPomos + q.queryID(timer.pomoID), {
         data: {
           finish: true,
           tasks: workTasks,
         }
       });
-      console.log("update");
-      console.log(res.data);
+
       const updateTask = await axios(user.token).get(p.apiTasks + "?" + q.queryPopulateSubTasks);
       dispatch(getTasks(updateTask.data.data));
       const response = await axios(token).get(p.apiPomos + "?" + q.queryFilterToday());
@@ -121,10 +145,29 @@ function CountdownComponent({ user }: Props) {
       }
 
       dispatch(timerNext(newType));
+
+      openNotification({
+        type: timer.type === "work" ? 'success' : "info",
+        message: timer.type === "work" ? "Pomodoro is finish" : "Break is over",
+        description: ``
+      });
+
     } catch (err) {
       if (request.isAxiosError(err) && err.response) {
         const { error } = err.response.data;
-        console.log(error)
+
+        openNotification({
+          type: 'error',
+          message: "An error has occurred",
+          description: `Error: ${error.message}`
+        });
+      } else {
+        console.log(err);
+        openNotification({
+          type: 'error',
+          message: "An error has occurred",
+          description: `Error: unknown error.`
+        });
       }
     }
 
@@ -150,6 +193,9 @@ function CountdownComponent({ user }: Props) {
             type: att.type,
             pomoID: id
           }));
+
+
+
         } else {
           dispatch(timerRefresh({
             end: att.end,
@@ -157,20 +203,24 @@ function CountdownComponent({ user }: Props) {
             type: att.type,
             pomoID: id
           }));
-        }
 
-      } else if (response.data.length > 1) {
-        console.error("[CHECK POMO running] - ERROR");
-        console.error("Multiples pomo running");
+
+        }
+      } else if (data.length > 1) {
+
+        openNotification({
+          type: 'error',
+          message: "An error has occurred",
+          description: `Error: Multiples pomo running.`
+        });
+
       } else {
         const lastPomo: PomoType = pomo.pomos[pomo.total - 1];
         if (lastPomo) {
-          console.log(lastPomo);
           if (lastPomo.attributes.type !== "work") {
             dispatch(timerNext("work"));
           } else {
             const newType = (pomo.total > 0 && (pomo.total) % (2 * pomoConfig.pomoBeforeLongBreak - 1) === 0) ? "long_break" : "short_break";
-            console.log("   Next Type: ", newType)
             dispatch(timerNext(newType));
           }
         }
@@ -179,13 +229,24 @@ function CountdownComponent({ user }: Props) {
       if (request.isAxiosError(err) && err.response) {
         const { data } = err.response;
         const { error } = data;
-        console.log(error);
+        openNotification({
+          type: 'error',
+          message: "An error has occurred",
+          description: `Error: ${error.message}`
+        });
+      } else {
+        openNotification({
+          type: 'error',
+          message: "An error has occurred",
+          description: `Error: unknown error.`
+        });
       }
     }
     setLoading(false);
   }, [dispatch, pomo, pomoConfig.pomoBeforeLongBreak, token]);
-  // --------------------------------------------------
 
+
+  // --------------------------------------------------
   const onChangeCountdown = useCallback((value: number | string | undefined) => {
     if (value !== undefined) {
       const calculateDuration = duration(timer.type) * convertTime(durationLength);
@@ -194,6 +255,7 @@ function CountdownComponent({ user }: Props) {
       setProgress(percent);
     }
   }, [duration, timer.type]);
+
 
   const formatHandler = useCallback(() => {
     //  "running" | "finish" | "pause" | "waiting";
@@ -242,7 +304,6 @@ function CountdownComponent({ user }: Props) {
 
   return (
     <div className={classes.timer}>
-      <p>{timer.status} - {timer.type} - {timer.pomoID}</p>
       <IconButton
         className={classes.timerIcon}
         tooltip="Setting"
