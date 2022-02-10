@@ -12,9 +12,10 @@ type Props = {
   disabled: boolean;
   onStart: () => void;
   onFinish: () => void;
+  onStop: () => void;
 }
 
-const CountdownBtn = ({ status, className, disabled, onStart, onFinish }: Props) => {
+const CountdownBtn = ({ status, className, disabled, onStart, onFinish, onStop }: Props) => {
   let text = "error";
   let classname = "";
   let fn = () => { };
@@ -32,7 +33,7 @@ const CountdownBtn = ({ status, className, disabled, onStart, onFinish }: Props)
     case "running":
       text = "Stop"
       classname = classes.btnStop;
-      fn = () => { console.log("STOP") }
+      fn = () => onStop();
       break;
     default:
       classname = classes.btnError;

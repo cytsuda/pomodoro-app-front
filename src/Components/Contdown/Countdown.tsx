@@ -35,7 +35,7 @@ type Props = {
 
 
 type StateType = "work" | "short_break" | "long_break"
-const durationLength = 's';
+const durationLength = process.env.NODE_ENV === "development" ? "s" : "m";
 const convertTime = (type: "m" | "s") => {
   let multiplier = 1000;
   if (type === "m") {
@@ -155,7 +155,6 @@ function CountdownComponent({ user }: Props) {
     } catch (err) {
       if (request.isAxiosError(err) && err.response) {
         const { error } = err.response.data;
-
         openNotification({
           type: 'error',
           message: "An error has occurred",
@@ -174,6 +173,51 @@ function CountdownComponent({ user }: Props) {
     setLoading(false);
   }, [dispatch, pomo.total, pomoConfig.pomoBeforeLongBreak, task.data, timer.pomoID, timer.type, token, user.token]);
 
+  const onStop = useCallback(async () => {
+    setLoading(true);
+    try {
+
+      const workTasks = task.data.filter((item: FetchedTaskType) => item.attributes.intermediate || (!item.attributes.completeDate && item.attributes.complete));
+      await axios(token).put(p.apiPomos + q.queryID(timer.pomoID), {
+        data: {
+          finish: true,
+          tasks: workTasks,
+        }
+      });
+
+      const updateTask = await axios(user.token).get(p.apiTasks + "?" + q.queryPopulateSubTasks);
+      dispatch(getTasks(updateTask.data.data));
+      const response = await axios(token).get(p.apiPomos + "?" + q.queryFilterToday());
+      dispatch(setPomos({ pomos: response.data.data, total: response.data.meta.pagination.total }));
+
+      let newType: StateType = "work";
+      dispatch(timerNext(newType));
+
+      openNotification({
+        type: timer.type === "work" ? 'error' : "warning",
+        message: timer.type === "work" ? "Pomodoro was canceled" : "Break is over",
+        description: ``
+      });
+
+    } catch (err) {
+      if (request.isAxiosError(err) && err.response) {
+        const { error } = err.response.data;
+        openNotification({
+          type: 'error',
+          message: "An error has occurred",
+          description: `Error: ${error.message}`
+        });
+      } else {
+        console.log(err);
+        openNotification({
+          type: 'error',
+          message: "An error has occurred",
+          description: `Error: unknown error.`
+        });
+      }
+    }
+    setLoading(false);
+  }, [dispatch, task.data, timer.pomoID, timer.type, token, user.token]);
   // Controller functions =============================
   const checkPomoRunning = useCallback(async () => {
     setLoading(true);
@@ -323,6 +367,7 @@ function CountdownComponent({ user }: Props) {
         onStart={() => onStart(timer.type)}
         disabled={loading}
         onFinish={onFinishPomo}
+        onStop={onStop}
       />
     </div>
   );
