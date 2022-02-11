@@ -2,7 +2,8 @@ import { useState, useCallback, useEffect } from "react";
 import clsx from "clsx";
 
 // Redux
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { setPomoConfig } from "@/Redux/userReducer";
 
 // Axios
 import request from "axios";
@@ -25,10 +26,13 @@ type MsgProps = {
   description: string;
   type: "success" | "info" | "warning" | "error";
 }
-
-const PomoConfigComponent = () => {
+type Props = {
+  onClose?: () => void;
+}
+const PomoConfigComponent = ({ onClose }: Props) => {
   const { userConfig, token } = useSelector((state: RootState) => state.user);
   const [edit, setEdit] = useState<boolean>(false);
+  const dispatch = useDispatch();
   const { pomoConfig } = userConfig;
   const [form] = Form.useForm();
 
@@ -66,6 +70,24 @@ const PomoConfigComponent = () => {
           description: ""
         });
       }
+      const { data: result } = await axios(token).get(p.apiUserConfig);
+      if (result.data) {
+        const { id, attributes } = result.data;
+        const controlValues = {
+          id: id,
+          pomoConfig: attributes.pomoConfig,
+          goalsConfig: attributes.goalsConfig,
+        }
+        dispatch(setPomoConfig(controlValues));
+        if (onClose) {
+          onClose();
+        }
+      }
+      /**
+        state.userConfig.pomoConfig = action.payload.pomoConfig;
+        state.userConfig.goalsConfig = action.payload.goalsConfig;
+        state.userConfig.id = action.payload.id;
+       */
       setEdit(false);
     } catch (err) {
       if (request.isAxiosError(err) && err.response) {
@@ -86,7 +108,7 @@ const PomoConfigComponent = () => {
     }
 
     // pomoConfig.id
-  }, [token]);
+  }, [dispatch, onClose, token]);
 
   useEffect(() => {
     if (pomoConfig.id !== "0" && token) {
@@ -105,7 +127,7 @@ const PomoConfigComponent = () => {
       onFinish={handleSave}
     >
       <div className={classes.infoCtrl}>
-        <Title level={4}>Pomo: {pomoConfig.id}</Title>
+        <Title level={4}>Pomo</Title>
         <div className={classes.infoCtrlBtn}>
           <Button
             className={clsx(classes.infoCtrlBtnInner, edit && classes.active)}

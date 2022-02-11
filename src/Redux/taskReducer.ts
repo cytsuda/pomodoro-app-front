@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 
-const initialState: TasksType = {
+const initialState: TasksControlType = {
   loading: false,
   data: []
 }

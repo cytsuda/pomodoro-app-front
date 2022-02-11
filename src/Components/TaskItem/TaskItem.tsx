@@ -195,16 +195,26 @@ const TaskItem = ({ data, id, disabled = false }: TaskItemPropType) => {
             </Tooltip>
           ) : null}
           {disabled && (
-            <Tooltip title={`${moment(data.completeDate).format("DD/MM/YYYY")} at ${moment(data.completeDate).format("HH:mm")}`}>
-              <span className={classes.endText}>Task finish</span>
-            </Tooltip>
+            <>
+              <TaskEditor id={id} data={data} editable={false} >
+                <Tooltip title={`${moment(data.completeDate).format("DD/MM/YYYY")} at ${moment(data.completeDate).format("HH:mm")}`}>
+                  <Button
+                    className={classes.endText}
+                    type="text"
+                    size="small"
+                  >
+                    Task finish
+                  </Button>
+                </Tooltip>
+              </TaskEditor>
+            </>
           )}
         </div>
       </div>
       {
         !disabled && (
           <div className={classes.icons} >
-            <TaskEditor id={id} data={data} />
+            <TaskEditor id={id} data={data} editable={true} />
             <Tooltip title="Delete">
               <Popconfirm
                 title="Are you sure to delete this task?"

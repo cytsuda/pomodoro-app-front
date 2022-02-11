@@ -6,11 +6,11 @@ import request from "axios";
 import axios, { path as p, query as q } from "@/Utils/apiController";
 
 // Redux
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import { getTasks, loadingTask, failTask } from "@/Redux/taskReducer"
 
 // Ant Design
-import { Typography, Button, Input, Divider, notification } from "antd";
+import { Typography, Button, Input, Divider, Alert, notification } from "antd";
 import { SyncOutlined } from '@ant-design/icons';
 
 // Classes & Styles
@@ -25,15 +25,18 @@ import TaskItem from "@/Components/TaskItem/TaskItem";
 // Desconstructor
 const { Title } = Typography
 
+type Props = {
+  user: ControlType;
+  task: TasksControlType;
+}
 // Component
-const TaskListComponent = () => {
+const TaskListComponent = ({ user, task }: Props) => {
   // Redux
-  const tasks = useSelector((state: RootState) => state.task);
-  const user = useSelector((state: RootState) => state.user);
   const dispatch = useDispatch();
   // Local States - [ ] - possible change or remove 
   const [taskTitle, setTaskTitle] = useState('');
   const [focus, setFocus] = useState(false);
+  const [show, setShow] = useState(true);
   // Ref
   const inputRef = useRef<Input>(null);
 
@@ -154,11 +157,11 @@ const TaskListComponent = () => {
   return (
     <div className={classes.container} >
       <div className={classes.top}>
-        <Title level={5}>
-          List of tasks {tasks && "- " + tasks.data.filter((item: FetchedTaskType) => !item.attributes.completeDate).length + " tasks"}
+        <Title level={5} >
+          List of tasks {task && "- " + task.data.filter((item: FetchedTaskType) => !item.attributes.completeDate).length + " task"}
         </Title>
         <div className={classes.refresh}>
-          <Button shape="circle" icon={<SyncOutlined spin={tasks.loading} />} onClick={() => getAllTask(false)} />
+          <Button shape="circle" icon={<SyncOutlined spin={task.loading} />} onClick={() => getAllTask(false)} />
         </div>
         <div className={classes.task}
           onFocus={() => setFocus(true)}
@@ -182,18 +185,41 @@ const TaskListComponent = () => {
       </div>
       <div>
         <div className={classes.content}>
-          {tasks && tasks.data.filter((item: FetchedTaskType) => !item.attributes.completeDate).map((item: FetchedTaskType) => (
+          {task && task.data.filter((item: FetchedTaskType) => !item.attributes.completeDate).map((item: FetchedTaskType) => (
             <TaskItem id={item.id} data={item.attributes} key={item.id} />
           ))}
         </div>
-        <Divider orientation="left">Complete Tasks</Divider>
-        <div className={classes.content}>
-          {tasks && tasks.data.filter((item: FetchedTaskType) => item.attributes.completeDate).map((item: FetchedTaskType) => (
-            <TaskItem disabled id={item.id} data={item.attributes} key={item.id} />
-          ))}
-        </div>
+        <Divider orientation="left">
+          <div className={classes.divider}>
+            <Button
+              shape={!show ? "default" : "round"}
+              size="small"
+              type={!show ? "ghost" : "primary"}
+              className={classes.dividerBtn}
+              onClick={() => setShow(prev => !prev)}
+            >
+              {show ? "Hide completed" : "Display completed"}
+            </Button>
+          </div>
+        </Divider>
+        {show && (
+
+          <div className={classes.content}>
+            {task && task.data.filter((item: FetchedTaskType) => item.attributes.completeDate).length > 0 ?
+              task.data.filter((item: FetchedTaskType) => item.attributes.completeDate).map((item: FetchedTaskType) => (
+                <TaskItem disabled id={item.id} data={item.attributes} key={item.id} />
+              )) : (
+                <Alert
+                  message="No completed tasks was found."
+                  type="warning"
+                  showIcon
+                />
+              )
+            }
+          </div>
+        )}
       </div>
-    </div>
+    </div >
   )
 }
 

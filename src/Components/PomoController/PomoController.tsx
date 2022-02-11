@@ -7,7 +7,7 @@ import request from "axios";
 import axios, { path as p, query as q } from "@/Utils/apiController";
 
 // Redux
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import { setPomos } from "@/Redux/pomosReducers"
 
 // AntD
@@ -25,12 +25,13 @@ const { Text } = Typography;
 
 interface Props {
   className: string;
+  user: ControlType;
+  task: TasksControlType;
 }
 
 
-const PomoController = ({ className }: Props) => {
+const PomoController = ({ className, user, task }: Props) => {
   const dispatch = useDispatch();
-  const { user, task } = useSelector((state: RootState) => state);
   const { pomoConfig } = user.userConfig;
 
   const getAllPomos = useCallback(async () => {
@@ -94,7 +95,7 @@ const PomoController = ({ className }: Props) => {
             </span>}
           description={
             (task && task.data && task.data.filter((item: FetchedTaskType) => (!item.attributes.completeDate)).length > 0) ?
-              task.data.filter((item: FetchedTaskType) => (!item.attributes.completeDate))[0].attributes.description
+              task.data.filter((item: FetchedTaskType) => (!item.attributes.completeDate))[0].attributes.note
               : null
           }
         />

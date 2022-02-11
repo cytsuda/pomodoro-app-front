@@ -2,9 +2,6 @@ import React from "react";
 import clsx from "clsx";
 import moment from "moment";
 
-// Redux
-import { useSelector } from "react-redux";
-
 // AntDesign
 import { Card, Timeline } from "antd";
 import { ClockCircleOutlined, HourglassOutlined } from '@ant-design/icons';
@@ -15,10 +12,10 @@ import classes from "./TimeLineComponent.module.less";
 // Type
 interface Props {
   className?: string;
+  pomo: PomoControlType;
 }
 
-const TimeLineComponent = ({ className }: Props) => {
-  const { pomo } = useSelector((state: RootState) => state);
+const TimeLineComponent = ({ className, pomo }: Props) => {
 
   const sortFunction = (array: any[]) => {
     const sortArray = array.slice().sort((a: any, b: any) => {

@@ -13,13 +13,14 @@ import { setPomos } from "@/Redux/pomosReducers";
 import { getTasks } from "@/Redux/taskReducer"
 
 // Ant Design
-import { Progress, Statistic, Typography, notification } from "antd"
+import { Progress, Statistic, Typography, Modal, notification } from "antd"
 import { cyan, blue, red } from "@ant-design/colors";
 import { SettingOutlined } from '@ant-design/icons';
 
 // Custom Components
 import IconButton from "@/Components/IconButton/IconButton";
 import CountdownBtn from '@/Components/Contdown/CountdownBtn';
+import PomoConfigComponent from "@/Components/PomoConfigComponent/PomoConfigComponent";
 
 // Classes & Styles
 import classes from "./Countdown.module.less";
@@ -50,6 +51,7 @@ function CountdownComponent({ user }: Props) {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState<boolean>(false);
   const [progress, setProgress] = useState<number>(0);
+  const [modal, setModal] = useState<boolean>(false);
 
   // Calculate Duration base on type of pomo;
   const { pomoConfig } = user.userConfig;
@@ -348,11 +350,22 @@ function CountdownComponent({ user }: Props) {
 
   return (
     <div className={classes.timer}>
+      <Modal
+        bodyStyle={{ padding: 0, margin: 0 }}
+        visible={modal}
+        centered
+        footer={null}
+        closable={false}
+        onCancel={() => setModal(false)}
+      >
+
+        <PomoConfigComponent onClose={() => setModal(false)} />
+      </Modal>
       <IconButton
         className={classes.timerIcon}
-        tooltip="Setting"
+        tooltip="Pomo preference"
         size="small"
-        onClick={checkPomoRunning}
+        onClick={() => setModal(true)}
         icon={<SettingOutlined />}
       />
       <Progress
