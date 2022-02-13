@@ -16,7 +16,7 @@ import { CheckboxChangeEvent } from "antd/lib/checkbox";
 import { DeleteFilled } from '@ant-design/icons';
 
 // Custom Components
-import TaskEditor from "@/Components/TaskEditor/TaskEditor";
+import TaskEditor from "@/Components/ModalTaskEditor/ModalTaskEditor";
 
 // Classes & Styles
 import classes from "./TaskItem.module.less";

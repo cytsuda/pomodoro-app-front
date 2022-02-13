@@ -7,6 +7,7 @@ import Layout from "@/Components/Layout/Layout";
 import ClockPage from "@/Pages/ClockPage/Clock";
 import AuthPage from "@/Pages/AuthPage/AuthPage";
 import ProfilePage from "@/Pages/ProfilePage/Profile";
+import TaskPage from "@/Pages/TasksPage/TaskPage";
 import NotFoundPage from "@/Pages/NotFoundPage/NotFoundPage";
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
         <Route path="profile" element={<ProfilePage />} />
         {/* TODO - create page for history & reports*/}
         {/* TODO - create page for tasks & subtasks*/}
+        <Route path="task" element={<TaskPage />} />
         <Route index element={<ClockPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>

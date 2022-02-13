@@ -5,7 +5,7 @@ import request from "axios";
 import axios, { path as p } from "@/Utils/apiController";
 
 // Ant Desing
-import { Outlet, Link, Navigate, useLocation } from "react-router-dom";
+import { Outlet, NavLink, Navigate, useLocation } from "react-router-dom";
 import { Layout, Menu, notification } from 'antd';
 import {
   HomeOutlined,
@@ -120,11 +120,25 @@ const LayoutPage = () => {
           collapsible
           onCollapse={() => setCollapse(prev => !prev)}
         >
-          <Menu className={classes.menu} theme="light" defaultSelectedKeys={['1']} mode="inline">
-            <Menu.Item key="1" icon={<HomeOutlined />} >
-              <Link to="/">
+          <Menu
+            className={classes.menu}
+            theme="light"
+            defaultSelectedKeys={[location.pathname]}
+            mode="inline"
+          >
+            <Menu.Item key="/"
+              icon={<HomeOutlined />}
+            >
+              <NavLink to="/">
                 Home
-              </Link>
+              </NavLink>
+            </Menu.Item>
+            <Menu.Item key="/task"
+              icon={<ProjectOutlined />}
+            >
+              <NavLink to="/task">
+                Task
+              </NavLink>
             </Menu.Item>
             {/* <Menu.Item key="2" icon={<ClockCircleOutlined />} >
               <Link to="/clock">
