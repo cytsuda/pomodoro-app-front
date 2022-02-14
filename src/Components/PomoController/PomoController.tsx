@@ -24,7 +24,7 @@ const { Meta } = Card;
 const { Text } = Typography;
 
 interface Props {
-  className: string;
+  className?: string;
   user: ControlType;
   task: TasksControlType;
 }
@@ -78,36 +78,33 @@ const PomoController = ({ className, user, task }: Props) => {
   }, [getAllPomos, user.token]);
 
   return (
-    <>
-      <Card
-        className={clsx(className, classes.card)}
-        cover={<CountdownComponent user={user} />}
-        bordered={true}
-      >
-        {/* TODO - META > Title, if title is lengthy than the card tooltip should be used to show all the text */}
-        <Meta
-          title={
-            <span
-              className={classes.cardTitle}>
-              {(task && task.data && task.data.filter((item: FetchedTaskType) => (!item.attributes.completeDate)).length > 0) ?
-                task.data.filter((item: FetchedTaskType) => (!item.attributes.completeDate))[0].attributes.title
-                : "No task is select"}
-            </span>}
-          description={
-            (task && task.data && task.data.filter((item: FetchedTaskType) => (!item.attributes.completeDate)).length > 0) ?
-              task.data.filter((item: FetchedTaskType) => (!item.attributes.completeDate))[0].attributes.note
-              : null
-          }
-        />
-        <div className={classes.cardInfo}>
-          <Text>Work Duration: {pomoConfig.workDuration}</Text>
-          <Text>Short Break: {pomoConfig.shortBreakDuration}</Text>
-          <Text>Long Break: {pomoConfig.longBreakDuration}</Text>
-          <Text>Pomo Before Long Break: {pomoConfig.pomoBeforeLongBreak}</Text>
-        </div>
-      </Card >
-
-    </>
+    <Card
+      className={clsx(className, classes.card)}
+      cover={<CountdownComponent user={user} />}
+      bordered={true}
+    >
+      {/* TODO - META > Title, if title is lengthy than the card tooltip should be used to show all the text */}
+      <Meta
+        title={
+          <span
+            className={classes.cardTitle}>
+            {(task && task.data && task.data.filter((item: FetchedTaskType) => (!item.attributes.completeDate)).length > 0) ?
+              task.data.filter((item: FetchedTaskType) => (!item.attributes.completeDate))[0].attributes.title
+              : "No task is select"}
+          </span>}
+        description={
+          (task && task.data && task.data.filter((item: FetchedTaskType) => (!item.attributes.completeDate)).length > 0) ?
+            task.data.filter((item: FetchedTaskType) => (!item.attributes.completeDate))[0].attributes.note
+            : null
+        }
+      />
+      <div className={classes.cardInfo}>
+        <Text>Work Duration: {pomoConfig.workDuration}</Text>
+        <Text>Short Break: {pomoConfig.shortBreakDuration}</Text>
+        <Text>Long Break: {pomoConfig.longBreakDuration}</Text>
+        <Text>Pomo Before Long Break: {pomoConfig.pomoBeforeLongBreak}</Text>
+      </div>
+    </Card >
   );
 }
 

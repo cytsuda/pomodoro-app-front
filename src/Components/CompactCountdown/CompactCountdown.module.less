@@ -1,0 +1,103 @@
+@import "~antd/lib/style/themes/dark.less";
+
+@work-color-hover: color(~`colorPalette("@{red-6}", 5) `);
+@work-color-active: color(~`colorPalette("@{red-6}", 7) `);
+@work-color-outline: fade(@red-6, @outline-fade);
+
+@short-color-hover: color(~`colorPalette("@{cyan-6}", 5) `);
+@short-color-active: color(~`colorPalette("@{cyan-6}", 7) `);
+@short-color-outline: fade(@cyan-6, @outline-fade);
+
+@long-color-hover: color(~`colorPalette("@{blue-6}", 5) `);
+@long-color-active: color(~`colorPalette("@{blue-6}", 7) `);
+@long-color-outline: fade(@blue-6, @outline-fade);
+
+.wrapper {
+  margin-left: 16px;
+}
+
+@btn-width: 130px;
+.styling {
+  margin: 0;
+  margin-right: -17px;
+  width: @btn-width;
+  height: 44px;
+  padding: 0 16px;
+  cursor: pointer;
+  box-shadow: @btn-primary-shadow;
+}
+.styling-text {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  border-radius: 2px;
+  font-size: 18px;
+  grid-gap: 8px;
+  font-weight: 600;
+  line-height: 44px;
+  color: @white;
+}
+
+.container {
+  .styling();
+  .styling-text();
+  &.work {
+    border: 1px solid @red-8;
+    background-color: @red-7;
+  }
+  &.short {
+    border: 1px solid @cyan-8;
+    background-color: @cyan-7;
+  }
+  &.long {
+    border: 1px solid @blue-8;
+    background-color: @blue-7;
+  }
+}
+
+.progress {
+  position: relative;
+  z-index: 0;
+  .styling();
+
+  &Text {
+    z-index: 2;
+    .styling-text();
+  }
+  &Val {
+    position: absolute;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    &.work {
+      background-color: @red-5;
+    }
+    &.short {
+      background-color: @cyan-5;
+    }
+    &.long {
+      background-color: @blue-5;
+    }
+  }
+
+  &.work {
+    border: 1px solid @red-8;
+    background-color: @red-7;
+  }
+  &.short {
+    border: 1px solid @cyan-8;
+    background-color: @cyan-7;
+  }
+  &.long {
+    border: 1px solid @blue-8;
+    background-color: @blue-7;
+  }
+}
+
+.finish {
+  border: 1px solid @success-color-outline;
+  background-color: @success-color;
+  .styling();
+  .styling-text();
+}

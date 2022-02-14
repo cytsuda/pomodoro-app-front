@@ -1,54 +1,49 @@
 import { useCallback, useEffect, useState } from 'react';
 import clsx from "clsx";
+import produce from "immer";
 import moment from "moment";
-
-// Axios
-import request from 'axios';
-import axios, { path as p, query as q } from "@/Utils/apiController";
-
-//Utils
-import { durationLength, convertTime } from "@/Utils/utils";
 
 // Redux
 import { useSelector, useDispatch } from "react-redux";
 import { timerStart, timerFinish, timerNext, timerRefresh } from "@/Redux/timerReducer";
 import { setPomos } from "@/Redux/pomosReducers";
 import { getTasks } from "@/Redux/taskReducer"
+// Axios
+import request from 'axios';
+import axios, { path as p, query as q } from "@/Utils/apiController";
 
 // Ant Design
-import { Progress, Statistic, Typography, Modal, notification } from "antd"
-import { cyan, blue, red } from "@ant-design/colors";
-import { SettingOutlined } from '@ant-design/icons';
+import { Statistic, Typography, Affix, notification } from "antd"
+import { PlayCircleOutlined, HourglassOutlined, CheckCircleOutlined } from '@ant-design/icons';
 
-// Custom Components
-import IconButton from "@/Components/IconButton/IconButton";
-import CountdownBtn from '@/Components/Contdown/CountdownBtn';
-import PomoConfigComponent from "@/Components/PomoConfigComponent/PomoConfigComponent";
+//Utils
+import { durationLength, convertTime } from "@/Utils/utils";
 
-// Classes & Styles
-import classes from "./Countdown.module.less";
+// ClassName & Styles
+import classes from "./CompactCountdown.module.less";
+
+type StateType = {
+  loading: boolean;
+  progress: number;
+}
 
 // Desconstructor
 const { Countdown } = Statistic;
 const { Text } = Typography;
 
-// Type
-type Props = {
-  user: ControlType;
-};
-
-
-function CountdownComponent({ user }: Props) {
+const CompactCountdown = () => {
+  const { user, timer, task, pomo } = useSelector((state: RootState) => state);
   const token = user.token;
-  const { timer, task, pomo } = useSelector((state: RootState) => state);
+  const { pomoConfig } = user.userConfig;
 
   const dispatch = useDispatch();
-  const [loading, setLoading] = useState<boolean>(false);
-  const [progress, setProgress] = useState<number>(0);
-  const [modal, setModal] = useState<boolean>(false);
 
-  // Calculate Duration base on type of pomo;
-  const { pomoConfig } = user.userConfig;
+  const [state, setState] = useState<StateType>({
+    loading: false,
+    progress: 0,
+  });
+
+  // Get duration base on pomoType
   const duration = useCallback((value: PomoWorkTypes) => {
     const d = {
       work: pomoConfig.workDuration,
@@ -58,7 +53,7 @@ function CountdownComponent({ user }: Props) {
     return d[value];
   }, [pomoConfig.longBreakDuration, pomoConfig.shortBreakDuration, pomoConfig.workDuration]);
 
-  // ------------------------------------------
+  // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
   const openNotification = ({ message, description, type }: MsgProps) => {
     notification[type]({
@@ -68,10 +63,11 @@ function CountdownComponent({ user }: Props) {
     });
   }
 
-  // ------------------------------------------
-
+  // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   const onStart = useCallback(async (type: PomoWorkTypes) => {
-    setLoading(true);
+    setState(produce(draft => {
+      draft.loading = true;
+    }));
     const now = moment();
     const end = moment(now).add(duration(type), durationLength);
     try {
@@ -112,15 +108,26 @@ function CountdownComponent({ user }: Props) {
         });
       }
     }
-    setLoading(false);
+    setState(produce(draft => {
+      draft.loading = false;
+    }));
   }, [dispatch, duration, token]);
 
   const onAutoFinish = useCallback(() => {
     dispatch(timerFinish());
-  }, [dispatch]);
+    openNotification({
+      type: timer.type === "work" ? 'success' : "info",
+      message: timer.type === "work" ? "Pomodoro is finish" : "Break is over",
+      description: ``
+    });
+
+  }, [dispatch, timer.type]);
 
   const onFinishPomo = useCallback(async () => {
-    setLoading(true);
+    setState(produce(draft => {
+      draft.loading = true;
+    }));
+
     try {
       const workTasks = task.data.filter((item: FetchedTaskType) => item.attributes.intermediate || (!item.attributes.completeDate && item.attributes.complete));
       await axios(token).put(p.apiPomos + q.queryID(timer.pomoID), {
@@ -142,11 +149,14 @@ function CountdownComponent({ user }: Props) {
 
       dispatch(timerNext(newType));
 
-      openNotification({
-        type: timer.type === "work" ? 'success' : "info",
-        message: timer.type === "work" ? "Pomodoro is finish" : "Break is over",
-        description: ``
-      });
+      if (timer.type === 'work') {
+        openNotification({
+          type: "success",
+          message: "Pomodoro is completed",
+          description: ``
+        });
+      }
+
 
     } catch (err) {
       if (request.isAxiosError(err) && err.response) {
@@ -166,11 +176,16 @@ function CountdownComponent({ user }: Props) {
       }
     }
 
-    setLoading(false);
+    setState(produce(draft => {
+      draft.loading = false;
+    }));
+
   }, [dispatch, pomo.total, pomoConfig.pomoBeforeLongBreak, task.data, timer.pomoID, timer.type, token, user.token]);
 
   const onStop = useCallback(async () => {
-    setLoading(true);
+    setState(produce(draft => {
+      draft.loading = true;
+    }));
     try {
 
       const workTasks = task.data.filter((item: FetchedTaskType) => item.attributes.intermediate || (!item.attributes.completeDate && item.attributes.complete));
@@ -212,11 +227,17 @@ function CountdownComponent({ user }: Props) {
         });
       }
     }
-    setLoading(false);
+
+    setState(produce(draft => {
+      draft.loading = true;
+    }));
+
   }, [dispatch, task.data, timer.pomoID, timer.type, token, user.token]);
   // Controller functions =============================
   const checkPomoRunning = useCallback(async () => {
-    setLoading(true);
+    setState(produce(draft => {
+      draft.loading = true;
+    }));
 
     try {
       const { data: response } = await axios(token).get(p.apiPomos + "?" + q.queryFilterStatusrunning);
@@ -282,7 +303,10 @@ function CountdownComponent({ user }: Props) {
         });
       }
     }
-    setLoading(false);
+    setState(produce(draft => {
+      draft.loading = false;
+    }));
+
   }, [dispatch, pomo, pomoConfig.pomoBeforeLongBreak, token]);
 
 
@@ -292,48 +316,12 @@ function CountdownComponent({ user }: Props) {
       const calculateDuration = duration(timer.type) * convertTime(durationLength);
       const divide = Number(value) / calculateDuration;
       const percent = Math.round((1 - divide) * 100);
-      setProgress(percent);
+      setState(produce(draft => {
+        draft.progress = percent;
+      }));
+
     }
   }, [duration, timer.type]);
-
-
-  const formatHandler = useCallback(() => {
-    //  "running" | "finish" | "pause" | "waiting";
-    if (timer.status === "running") {
-      return (
-        <Countdown
-          value={moment(timer.end).format()}
-          format={"mm:ss"}
-          onChange={onChangeCountdown}
-          onFinish={onAutoFinish}
-        />
-      );
-    } else if (timer.status === "finish") {
-      return (
-        <Text
-          className={clsx(classes.specialBtn, getBtnClass(timer.type))}
-          onClick={onFinishPomo}
-        >
-          Done
-        </Text>
-      );
-    } else if (timer.status === "waiting") {
-      return (
-        <Text
-          className={classes.specialBtn}
-          type="secondary"
-          onClick={() => onStart(timer.type)}
-        >
-          Start
-        </Text>
-      );
-    }
-    return (
-      <Text>
-        not ready
-      </Text>
-    );
-  }, [onAutoFinish, onChangeCountdown, onFinishPomo, onStart, timer.end, timer.status, timer.type]);
 
 
   useEffect(() => {
@@ -343,78 +331,51 @@ function CountdownComponent({ user }: Props) {
   }, [checkPomoRunning, timer.active, token]);
 
   return (
-    <div className={classes.timer}>
-      <Modal
-        bodyStyle={{ padding: 0, margin: 0 }}
-        visible={modal}
-        centered
-        footer={null}
-        closable={false}
-        onCancel={() => setModal(false)}
-      >
+    <div className={classes.wrapper}>
+      <Affix offsetTop={10}>
+        {timer.status === "waiting" && (
+          <div className={clsx(classes.container, getBtnClass(timer.type))} onClick={() => onStart(timer.type)}>
+            <PlayCircleOutlined />
+            <Text>
+              Start
+            </Text>
+          </div>
+        )}
+        {/* TODO add diferent colors for work/short/long */}
+        {timer.status === "running" && (
+          <div className={clsx(classes.progress, getBtnClass(timer.type))}>
+            <div className={classes.progressText} onClick={onStop}>
+              <HourglassOutlined />
+              <Countdown
+                value={moment(timer.end).format()}
+                format={"mm:ss"}
+                onChange={onChangeCountdown}
+                onFinish={onAutoFinish}
+                valueStyle={{ fontSize: 18, lineHeight: "44px" }}
+              />
+              <div
+                className={clsx(classes.progressVal, getBtnClass(timer.type))}
+                // style={{ width: `${state.progress}%` }}
+                style={{ width: `${state.progress}%` }}
+              />
+            </div>
 
-        <PomoConfigComponent onClose={() => setModal(false)} />
-      </Modal>
-      <IconButton
-        className={classes.timerIcon}
-        tooltip="Pomo preference"
-        size="small"
-        onClick={() => setModal(true)}
-        icon={<SettingOutlined />}
-      />
-      <Progress
-        type="circle"
-        percent={getProgress({ state: timer.status, progress: progress })}
-        format={formatHandler}
-        strokeColor={getStroke({ type: timer.type, progress })}
-      />
-      <CountdownBtn
-        status={timer.status}
-        className={getBtnClass(timer.type)}
-        onStart={() => onStart(timer.type)}
-        disabled={loading}
-        onFinish={onFinishPomo}
-        onStop={onStop}
-      />
-    </div>
+          </div>
+        )}
+        {timer.status === "finish" && (
+          <div className={classes.finish} onClick={onFinishPomo}>
+            <CheckCircleOutlined />
+            <Text>
+              Finish
+            </Text>
+          </div>
+        )}
+      </Affix>
+    </div >
   );
 }
-export default CountdownComponent;
-// Util
-type GetProgressProps = {
-  state: CountdownStatusType;
-  progress: number;
-}
-const getProgress = ({ state, progress }: GetProgressProps) => {
-  switch (state) {
-    case "running":
-      return progress;
-    case "waiting":
-      return 0;
-    case "finish":
-      return 100;
-    case "pause":
-      return progress; //???
-    default:
-      return 0;
-  }
-}
-type GetStrokeProps = {
-  type: PomoWorkTypes;
-  progress: number
-}
-const getStroke = ({ type, progress }: GetStrokeProps): string => {
-  switch (type) {
-    case "work":
-      return red[6];
-    case "short_break":
-      return cyan[6];
-    case "long_break":
-      return blue[6];
-    default:
-      return red[5]
-  }
-}
+
+export default CompactCountdown;
 
 const getBtnClass = (type: PomoWorkTypes): string => {
   switch (type) {
@@ -428,3 +389,13 @@ const getBtnClass = (type: PomoWorkTypes): string => {
       return ""
   }
 }
+/* onClick={() => onStart(timer.type)}
+          <div className={classes.container}>
+            <Countdown
+              value={moment(timer.end).format()}
+              format={"mm:ss"}
+              onChange={onChangeCountdown}
+              onFinish={onAutoFinish}
+            />
+          </div>
+*/

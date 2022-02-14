@@ -96,9 +96,16 @@ const TaskComponent = ({ editable, data, id, onClose, display }: Props) => {
         const { data: res } = await axios(token).post(p.apiTasks, {
           data: updateTask
         });
+        console.log(res.data);
+        openNotification({
+          type: 'success',
+          message: `Task successfully created: "${res.data.attributes.title}"`,
+          description: ``
+        });
         if (res.data.id) {
-          const res = await axios(token).get(p.apiTasks + "?" + q.queryPopulateSubTasks);
-          dispatch(getTasks(res.data.data));
+          const { data: res } = await axios(token).get(p.apiTasks + "?" + q.queryPopulateSubTasks);
+
+          dispatch(getTasks(res.data));
         } else {
           openNotification({
             type: 'error',

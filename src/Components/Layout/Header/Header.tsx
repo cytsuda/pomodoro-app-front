@@ -1,4 +1,5 @@
 import React from "react";
+
 // React-Router
 import { Link } from "react-router-dom";
 
@@ -9,7 +10,10 @@ import { useSelector } from "react-redux";
 import { Menu, Avatar, Dropdown, Typography, Layout } from "antd";
 import { UserOutlined, SettingOutlined, LogoutOutlined, DashboardOutlined } from '@ant-design/icons';
 
-// class
+// Custom Component
+import CompactCountdown from "@/Components/CompactCountdown/CompactCountdown";
+
+// class & Styles
 import classes from "./Header.module.less";
 
 // Desconstructor
@@ -58,6 +62,7 @@ const HeaderComponent = (props: HeaderComponentType) => {
           MyAPP
         </Text>
       </div>
+
       <div className={classes.control}>
         <Dropdown overlay={AvatarMenu} placement="bottomRight">
           <div className={classes.controlAvatar}>
@@ -66,6 +71,8 @@ const HeaderComponent = (props: HeaderComponentType) => {
           </div>
         </Dropdown>
       </div>
+
+      <CompactCountdown />
     </Header>
   );
 }
