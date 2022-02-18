@@ -10,8 +10,11 @@ import request from "axios";
 import axios, { path as p, query as q } from "@/Utils/apiController"
 
 // AntDesign
-import { Typography, InputNumber, Divider, Button, Form, Skeleton, notification } from "antd";
+import { Typography, InputNumber, Divider, Button, Form, Skeleton } from "antd";
 import { EditOutlined, SyncOutlined } from '@ant-design/icons';
+
+// Custom Component
+import openNotification from "@/Components/Notification/Notification";
 
 // Classes & Styles
 import classes from "./GoalsConfigComponent.module.less"
@@ -19,30 +22,11 @@ import classes from "./GoalsConfigComponent.module.less"
 // Desconstructor
 const { Title } = Typography;
 
-type MsgProps = {
-  message: string;
-  description: string;
-  type: "success" | "info" | "warning" | "error";
-}
-
 const GoalsConfigComponent = () => {
   const { userConfig, token } = useSelector((state: RootState) => state.user);
   const [edit, setEdit] = useState<boolean>(false);
   const { goalsConfig } = userConfig;
   const [form] = Form.useForm();
-
-  // ------------------------------------------
-
-  const openNotification = ({ message, description, type }: MsgProps) => {
-    notification[type]({
-      message: message,
-      description: description,
-      placement: "topRight",
-    });
-  }
-
-  // ------------------------------------------
-
 
   const handleSave = useCallback(async (e) => {
     // TODO - add feedback when something is success / fail on change

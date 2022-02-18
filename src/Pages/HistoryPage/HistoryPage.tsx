@@ -19,7 +19,7 @@ import openNotification from "@/Components/Notification/Notification";
 import { getAllPomosUtil } from "@/Utils/utils";
 
 // Class & Styles
-// import classes from "./HistoryPage.module.less"
+import classes from "./HistoryPage.module.less";
 
 
 const HistoryPage = () => {
@@ -31,12 +31,12 @@ const HistoryPage = () => {
     week: 0,
     month: 0,
   });
-
+  const [calendar, setCalendar] = useState<PomoType[]>([]);
   const dispatch = useDispatch();
 
   const getAllPomosMonth = useCallback(async (date: Moment, alert: boolean = false) => {
     try {
-      const { data: res } = await axios(token).get(p.apiPomos + "?" + q.queryAllPomoMonth(date));
+      const { data: res } = await axios(token).get(p.apiPomos + "?" + q.queryAllPomoTime(date, 'month'));
       const { data: pomos } = res;
       const { pagination } = res.meta;
       const data = getAllPomosUtil({
@@ -94,6 +94,58 @@ const HistoryPage = () => {
 
   }, [getAllPomosMonth, history, history.history, token]);
 
+  const dateCellHandler = (value: Moment) => {
+    if (history.history && history.history.length > 0) {
+      const indexMonth = history.history.findIndex((hist: MonthHistoryType) => moment(hist.month).isSame(value, "month"));
+      if (indexMonth !== -1) {
+        const pomos = history.history[indexMonth].pomos.filter((pomo: PomoType) => moment(pomo.attributes.start).isSame(value, "day"));
+        if (pomos.length > 0) {
+          return (
+            <p>{pomos.length} pomos</p>
+          );
+        }
+      }
+    }
+    return <></>
+
+  }
+  const monthCellHander = (value: Moment) => {
+    if (calendar.length > 0) {
+      const totalPomoMonth = calendar.filter((item: PomoType) => moment(item.attributes.start).isSame(value, "month"))
+      if (totalPomoMonth.length > 0) {
+        return <>{totalPomoMonth.length} pomos</>
+      }
+    }
+    return <></>
+  }
+
+  const panelHandler = async (date: Moment, mode: string) => {
+    console.log("ON PANEL CHANGE")
+    console.log(date);
+    console.log(mode);
+    try {
+      const { data: res } = await axios(token).get(p.apiPomos + "?" + q.queryAllPomoTime(date, 'year'));
+      setCalendar(res.data);
+    } catch (err) {
+      if (request.isAxiosError(err) && err.response) {
+        const { data } = err.response;
+        const { error } = data;
+        openNotification({
+          type: 'error',
+          message: "An error has occurred",
+          description: `Error: ${error.message}`
+        });
+      } else {
+        console.log(err);
+        openNotification({
+          type: 'error',
+          message: "An error has occurred",
+          description: `Error: unknown error.`
+        });
+      }
+    }
+  }
+
   useEffect(() => {
     if (token) {
       getAllPomosMonth(moment())
@@ -127,11 +179,16 @@ const HistoryPage = () => {
         <Divider />
       </Col>
       <Col span={12}>
-        <Calendar />
+        <div className={classes.calendar}>
+          <Calendar
+            dateCellRender={dateCellHandler}
+            monthCellRender={monthCellHander}
+            onPanelChange={panelHandler}
+          />
+        </div>
       </Col>
       <Col span={12}>
         <p>Show pomo</p>
-        <button onClick={() => getAllPomosMonth(moment(), true)}>CLICK HERE</button>
       </Col>
     </Row>
   );

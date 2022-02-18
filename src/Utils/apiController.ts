@@ -72,9 +72,9 @@ const queryFilterToday = () => {
 
 // Const query month
 
-const queryAllPomoMonth = (date: Moment) => {
-  const startOfMonth = moment().startOf('month');
-  const endOfMonth = moment().endOf('month');
+const queryAllPomoTime = (date: Moment, scope: "month" | "year") => {
+  const startTime = moment().startOf(scope);
+  const endTime = moment().endOf(scope);
 
   return qs.stringify({
     populate: [
@@ -84,11 +84,11 @@ const queryAllPomoMonth = (date: Moment) => {
       $and: [
         {
           end: {
-            $gte: startOfMonth.utc().format()
+            $gte: startTime.utc().format()
           }
         }, {
           end: {
-            $lte: endOfMonth.utc().format()
+            $lte: endTime.utc().format()
           }
         }, {
           status: {
@@ -108,6 +108,6 @@ export const query = {
   queryFilterStatusrunning,
   queryID,
   queryFilterToday,
-  queryAllPomoMonth
+  queryAllPomoTime
 }
 export default api;

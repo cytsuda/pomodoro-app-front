@@ -127,7 +127,7 @@ function CountdownComponent({ user }: Props) {
       dispatch(getTasks(updateTask.data.data));
       const response = await axios(token).get(p.apiPomos + "?" + q.queryFilterToday());
 
-      const { data: res } = await axios(token).get(p.apiPomos + "?" + q.queryAllPomoMonth(moment()));
+      const { data: res } = await axios(token).get(p.apiPomos + "?" + q.queryAllPomoTime(moment(), 'month'));
       const { data: pomos } = res;
       const { pagination } = res.meta;
       const data = getAllPomosUtil({

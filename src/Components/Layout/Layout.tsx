@@ -6,10 +6,11 @@ import axios, { path as p } from "@/Utils/apiController";
 
 // Ant Desing
 import { Outlet, NavLink, Navigate, useLocation } from "react-router-dom";
-import { Layout, Menu, notification } from 'antd';
+import { Layout, Menu } from 'antd';
 import {
   HomeOutlined,
   ProjectOutlined,
+  ReadOutlined
   // ClockCircleOutlined,
 } from '@ant-design/icons';
 
@@ -24,6 +25,9 @@ import { useCookies } from 'react-cookie';
 // Custom Components
 import HeaderComponent from "@/Components/Layout/Header/Header";
 import FooterComponent from "@/Components/Layout/Footer/Footer";
+import openNotification from "@/Components/Notification/Notification";
+
+// Utils
 
 // Classes & Styles
 import classes from "./Layout.module.less";
@@ -31,30 +35,12 @@ import classes from "./Layout.module.less";
 // Desconstructor
 const { Content, Sider } = Layout;
 
-type MsgProps = {
-  message: string;
-  description: string;
-  type: "success" | "info" | "warning" | "error";
-}
-
 const LayoutPage = () => {
   const [cookie, , removeCookie] = useCookies();
   const location = useLocation();
   const dispatch = useDispatch();
 
   const [collapse, setCollapse] = useState<boolean>(false);
-
-  // ------------------------------------------
-
-  const openNotification = ({ message, description, type }: MsgProps) => {
-    notification[type]({
-      message: message,
-      description: description,
-      placement: "topRight",
-    });
-  }
-
-  // ------------------------------------------
 
 
   const loadUserHandler = useCallback(async (token: string) => {
@@ -141,7 +127,7 @@ const LayoutPage = () => {
               </NavLink>
             </Menu.Item>
             <Menu.Item key="/history"
-              icon={<ProjectOutlined />}
+              icon={<ReadOutlined />}
             >
               <NavLink to="/history">
                 History
