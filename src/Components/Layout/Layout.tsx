@@ -140,6 +140,13 @@ const LayoutPage = () => {
                 Task
               </NavLink>
             </Menu.Item>
+            <Menu.Item key="/history"
+              icon={<ProjectOutlined />}
+            >
+              <NavLink to="/history">
+                History
+              </NavLink>
+            </Menu.Item>
             {/* <Menu.Item key="2" icon={<ClockCircleOutlined />} >
               <Link to="/clock">
                 Clock

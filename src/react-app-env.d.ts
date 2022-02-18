@@ -11,12 +11,26 @@ declare module "*.module.less" {
   const classes: { readonly [key: string]: string };
   export default classes;
 }
-
 type MsgProps = {
   message: string;
   description: string;
   type: "success" | "info" | "warning" | "error";
 }
+
+type HistoryType = {
+  history: MonthHistoryType[]
+}
+
+type MonthHistoryType = {
+  month: string;
+  pomos: PomoType[];
+  dailyPomos: number;
+  numDays: number;
+  weekPomos: number;
+  numWeeks: number;
+  monthPomos: number;
+}
+
 type ControlType = {
   token?: string;
   user?: UserType;

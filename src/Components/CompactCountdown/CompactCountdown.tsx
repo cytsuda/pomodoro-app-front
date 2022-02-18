@@ -8,16 +8,24 @@ import { useSelector, useDispatch } from "react-redux";
 import { timerStart, timerFinish, timerNext, timerRefresh } from "@/Redux/timerReducer";
 import { setPomos } from "@/Redux/pomosReducers";
 import { getTasks } from "@/Redux/taskReducer"
+import { setHistory } from "@/Redux/historyReducer";
+
 // Axios
 import request from 'axios';
 import axios, { path as p, query as q } from "@/Utils/apiController";
 
 // Ant Design
-import { Statistic, Typography, Affix, notification } from "antd"
+import { Statistic, Typography, Affix } from "antd"
 import { PlayCircleOutlined, HourglassOutlined, CheckCircleOutlined } from '@ant-design/icons';
 
 //Utils
 import { durationLength, convertTime } from "@/Utils/utils";
+
+// Custom components
+import openNotification from "@/Components/Notification/Notification";
+
+// Utils
+import { getAllPomosUtil } from "@/Utils/utils";
 
 // ClassName & Styles
 import classes from "./CompactCountdown.module.less";
@@ -52,18 +60,6 @@ const CompactCountdown = () => {
     }
     return d[value];
   }, [pomoConfig.longBreakDuration, pomoConfig.shortBreakDuration, pomoConfig.workDuration]);
-
-  // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-  const openNotification = ({ message, description, type }: MsgProps) => {
-    notification[type]({
-      message: message,
-      description: description,
-      placement: "topLeft",
-    });
-  }
-
-  // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   const onStart = useCallback(async (type: PomoWorkTypes) => {
     setState(produce(draft => {
       draft.loading = true;
@@ -141,6 +137,16 @@ const CompactCountdown = () => {
       dispatch(getTasks(updateTask.data.data));
       const response = await axios(token).get(p.apiPomos + "?" + q.queryFilterToday());
       dispatch(setPomos({ pomos: response.data.data, total: response.data.meta.pagination.total }));
+
+      const { data: res } = await axios(token).get(p.apiPomos + "?" + q.queryAllPomoMonth(moment()));
+      const { data: pomos } = res;
+      const { pagination } = res.meta;
+      const data = getAllPomosUtil({
+        array: pomos,
+        date: moment(),
+        total: pagination.total
+      });
+      dispatch(setHistory(data));
 
       let newType: PomoWorkTypes = "work";
       if (timer.type === "work") {

@@ -1,6 +1,6 @@
 import axios from "axios";
 import qs from "qs";
-import moment from "moment";
+import moment, { Moment } from "moment";
 
 const api = (token?: string) => axios.create({
   baseURL: process.env.REACT_APP_SERVER_URL ? process.env.REACT_APP_SERVER_URL : "http://localhost:1337/",
@@ -69,10 +69,45 @@ const queryFilterToday = () => {
     }
   })
 };
+
+// Const query month
+
+const queryAllPomoMonth = (date: Moment) => {
+  const startOfMonth = moment().startOf('month');
+  const endOfMonth = moment().endOf('month');
+
+  return qs.stringify({
+    populate: [
+      "tasks"
+    ],
+    filters: {
+      $and: [
+        {
+          end: {
+            $gte: startOfMonth.utc().format()
+          }
+        }, {
+          end: {
+            $lte: endOfMonth.utc().format()
+          }
+        }, {
+          status: {
+            $eq: "completed"
+          }
+        }, {
+          type: {
+            $eq: "work"
+          }
+        }
+      ]
+    }
+  })
+};
 export const query = {
   queryPopulateSubTasks,
   queryFilterStatusrunning,
   queryID,
-  queryFilterToday
+  queryFilterToday,
+  queryAllPomoMonth
 }
 export default api;

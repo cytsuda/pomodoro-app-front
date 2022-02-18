@@ -1,0 +1,46 @@
+.col {
+  display: flex;
+  flex-direction: row;
+  grid-gap: 16px;
+}
+
+.icon {
+  margin-left: 12px;
+  font-size: 18px;
+}
+
+.display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  &Done {
+    font-size: 32px;
+  }
+  &Goal {
+    position: absolute;
+    font-size: 16px;
+    top: 50%;
+    left: 50% + 12px;
+  }
+}
+
+.card {
+  display: flex;
+  flex-direction: row;
+  grid-gap: 32px;
+  &Info {
+    display: flex;
+    flex-direction: column;
+    &Text {
+      margin-top: auto;
+      margin-bottom: 0;
+    }
+    &Values {
+      font-size: 32px;
+      font-weight: 700;
+      line-height: 1;
+      margin-bottom: 16px;
+    }
+  }
+}
