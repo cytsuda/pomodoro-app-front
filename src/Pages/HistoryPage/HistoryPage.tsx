@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setHistory } from "@/Redux/historyReducer";
 
 // Ant Design
-import { Row, Col, Calendar, Divider, Typography, List, Button, Tooltip } from "antd"
+import { Row, Col, Calendar, Typography, List, Button, Tooltip } from "antd"
 import {
   WarningOutlined, CheckCircleOutlined, CalendarOutlined, ClockCircleOutlined
 
@@ -236,11 +236,7 @@ const HistoryPage = () => {
         />
         <Button onClick={() => getAllPomosMonth(moment())}>GET ALL POMOS</Button>
       </Col>
-      <Col span={24}>
-        <Divider />
-        <h2 style={{ textAlign: "center" }}>⬇️⬇️⬇️⬇️⬇️ THIS IS DISABLE ⬇️⬇️⬇️⬇️⬇️</h2>
-        <Divider />
-      </Col>
+
       <Col span={14}>
         <div className={classes.calendar}>
           <Calendar
