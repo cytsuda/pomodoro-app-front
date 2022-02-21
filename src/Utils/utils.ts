@@ -9,67 +9,29 @@ const convertTime = (type: "m" | "s") => {
   return multiplier;
 }
 
-type GetAllPomoUtilType = {
-  array: PomoType[];
-  date: Moment;
-  total: number;
-}
-type DatePomosType = {
-  date: string;
-  pomos: PomoType[]
-}
+function checkDailyWeek(input: Moment) {
 
-const getAllPomosUtil = ({ array, date, total }: GetAllPomoUtilType) => {
-  let totalDays: DatePomosType[] = [];
-  let totalWeeks: DatePomosType[] = [];
-  array.forEach((pomo: PomoType, index: number) => {
-    if (index === 0) {
-      totalDays.push({
-        date: moment(pomo.attributes.start).format("YYYY-MM-DDD"),
-        pomos: [pomo]
-      });
-      totalWeeks.push({
-        date: moment(pomo.attributes.start).format("YYYY-MM-DDD"),
-        pomos: [pomo]
-      });
-    } else {
-      // Days
-      const dayIndex = totalDays.findIndex(item => moment(item.date).isSame(moment(pomo.attributes.start), "day"));
-      if (dayIndex === -1) {
-        totalDays.push({
-          date: moment(pomo.attributes.start).format("YYYY-MM-DD"),
-          pomos: [pomo]
-        });
-      } else {
-        totalDays[dayIndex].pomos.push(pomo);
-      }
-      // Week
-      const weekIndex = totalWeeks.findIndex(item => moment(item.date).isSame(moment(pomo.attributes.start), "week"));
-      if (weekIndex === -1) {
-        totalWeeks.push({
-          date: moment(pomo.attributes.start).format("YYYY-MM-DD"),
-          pomos: [pomo]
-        });
-      } else {
-        totalWeeks[weekIndex].pomos.push(pomo);
-      }
-    }
-  });
-
-  const data = {
-    month: date.format("YYYY-MM-DD"),
-    pomos: array,
-    dailyPomos: array.filter((item: PomoType) => moment(item.attributes.start).isSame(moment(date), "day")).length,
-    numDays: totalDays.length,
-    weekPomos: array.filter((item: PomoType) => moment(item.attributes.start).isSame(moment(date), "week")).length,
-    numWeeks: totalWeeks.length,
-    monthPomos: total,
+  if (input.isSame(moment(), "day")) {
+    return "day"
+  } else if (input.isSame(moment(), "week")) {
+    return "week"
+  } else {
+    return "none"
   }
-  return data;
+}
+
+function weekOfMonth(input = moment()) {
+  const firstDayOfMonth = input.clone().startOf('month');
+  const firstDayOfWeek = firstDayOfMonth.clone().startOf('week');
+
+  const offset = firstDayOfMonth.diff(firstDayOfWeek, 'days');
+
+  return Math.ceil((input.date() + offset) / 7);
 }
 
 export {
-  getAllPomosUtil,
+  checkDailyWeek,
+  weekOfMonth,
   durationLength,
   convertTime
 }

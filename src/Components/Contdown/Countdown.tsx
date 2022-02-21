@@ -28,7 +28,7 @@ import PomoConfigComponent from "@/Components/PomoConfigComponent/PomoConfigComp
 import openNotification from "@/Components/Notification/Notification";
 
 // Utils
-import { getAllPomosUtil } from "@/Utils/utils";
+// import { getAllPomosUtil } from "@/Utils/utils";
 
 // Classes & Styles
 import classes from "./Countdown.module.less";
@@ -127,15 +127,15 @@ function CountdownComponent({ user }: Props) {
       dispatch(getTasks(updateTask.data.data));
       const response = await axios(token).get(p.apiPomos + "?" + q.queryFilterToday());
 
-      const { data: res } = await axios(token).get(p.apiPomos + "?" + q.queryAllPomoTime(moment(), 'month'));
-      const { data: pomos } = res;
-      const { pagination } = res.meta;
-      const data = getAllPomosUtil({
-        array: pomos,
-        date: moment(),
-        total: pagination.total
-      });
-      dispatch(setHistory(data));
+      // const { data: res } = await axios(token).get(p.apiPomos + "?" + q.queryAllPomoTime(moment(), 'month'));
+      // const { data: pomos } = res;
+      // const { pagination } = res.meta;
+      // const data = getAllPomosUtil({
+      //   array: pomos,
+      //   date: moment(),
+      //   total: pagination.total
+      // });
+      // dispatch(setHistory(data));
       dispatch(setPomos({ pomos: response.data.data, total: response.data.meta.pagination.total }));
 
       let newType: PomoWorkTypes = "work";

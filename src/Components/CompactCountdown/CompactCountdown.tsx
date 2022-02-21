@@ -25,7 +25,7 @@ import { durationLength, convertTime } from "@/Utils/utils";
 import openNotification from "@/Components/Notification/Notification";
 
 // Utils
-import { getAllPomosUtil } from "@/Utils/utils";
+// import { getAllPomosUtil } from "@/Utils/utils";
 
 // ClassName & Styles
 import classes from "./CompactCountdown.module.less";
@@ -138,15 +138,15 @@ const CompactCountdown = () => {
       const response = await axios(token).get(p.apiPomos + "?" + q.queryFilterToday());
       dispatch(setPomos({ pomos: response.data.data, total: response.data.meta.pagination.total }));
 
-      const { data: res } = await axios(token).get(p.apiPomos + "?" + q.queryAllPomoTime(moment(), 'month'));
-      const { data: pomos } = res;
-      const { pagination } = res.meta;
-      const data = getAllPomosUtil({
-        array: pomos,
-        date: moment(),
-        total: pagination.total
-      });
-      dispatch(setHistory(data));
+      // const { data: res } = await axios(token).get(p.apiPomos + "?" + q.queryAllPomoTime(moment(), 'month'));
+      // const { data: pomos } = res;
+      // const { pagination } = res.meta;
+      // const data = getAllPomosUtil({
+      //   array: pomos,
+      //   date: moment(),
+      //   total: pagination.total
+      // });
+      // dispatch(setHistory(data));
 
       let newType: PomoWorkTypes = "work";
       if (timer.type === "work") {

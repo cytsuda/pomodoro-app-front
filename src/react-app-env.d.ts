@@ -18,17 +18,28 @@ type MsgProps = {
 }
 
 type HistoryType = {
-  history: MonthHistoryType[]
+  history: ScopeHistoryType[];
+  currentHistory: CurrentHistoryType;
 }
 
-type MonthHistoryType = {
-  month: string;
+
+type ScopeHistoryType = {
+  scope: string;
+  data: ScopeHistoryDateType[];
+}
+
+type ScopeHistoryDateType = {
+  day: string;
+  week: string;
   pomos: PomoType[];
+}
+
+type CurrentHistoryType = {
   dailyPomos: number;
-  numDays: number;
   weekPomos: number;
-  numWeeks: number;
   monthPomos: number;
+  totalDays: number;
+  totalWeeks: number;
 }
 
 type ControlType = {

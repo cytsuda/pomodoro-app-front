@@ -215,13 +215,13 @@ const TaskComponent = ({ editable, data, id, onClose, display }: Props) => {
         )}
       </Form.Item>
 
-      <Form.Item
+      {/* <Form.Item
         name="remind"
         label="Remind"
         tooltip="Date and Time to remind about the task."
       >
         <DatePicker showTime format="DD-MM-YYYY HH:mm:ss" disabled={!editable} />
-      </Form.Item>
+      </Form.Item> */}
 
       {!editable && data && data.complete && (
         <>

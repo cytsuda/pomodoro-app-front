@@ -1,26 +1,64 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-
-const initialState: HistoryType = {
-  history: []
+/**
+ * 
+type HistoryType = {
+  history: ScopeHistoryType[];
+  currentHistory: CurrentHistoryType;
 }
 
+
+type ScopeHistoryType = {
+  scope: string;
+  data: ScopeHistoryDateType[];
+}
+
+type ScopeHistoryDateType = {
+  day: string;
+  week: string;
+  pomos: PomoType[];
+}
+
+type CurrentHistoryType = {
+  dailyPomos: number;
+  weekPomos: number;
+  monthPomos: number;
+  totalDays: number;
+  totalWeeks: number;
+}
+ * 
+ */
+const initialState: HistoryType = {
+  history: [],
+  currentHistory: {
+    dailyPomos: 0,
+    weekPomos: 0,
+    monthPomos: 0,
+    totalDays: 0,
+    totalWeeks: 0,
+  }
+}
+
+type SetHistoryType = {
+  index: number,
+  scope: string,
+  data: ScopeHistoryDateType[]
+  currentHistory: CurrentHistoryType
+}
 
 export const historySlice = createSlice({
   name: 'history',
   initialState,
   reducers: {
-    setHistory: (state: HistoryType, action: PayloadAction<MonthHistoryType>) => {
-      const index = state.history.findIndex(hist => hist.month === action.payload.month)
-      if (index === -1) {
-        state.history.push(action.payload);
-      } else {
-        state.history[index].pomos = action.payload.pomos;
-        state.history[index].dailyPomos = action.payload.dailyPomos;
-        state.history[index].numDays = action.payload.numDays;
-        state.history[index].weekPomos = action.payload.weekPomos;
-        state.history[index].numWeeks = action.payload.numWeeks;
-        state.history[index].monthPomos = action.payload.monthPomos;
+    setHistory: (state: HistoryType, action: PayloadAction<SetHistoryType>) => {
+
+      const validation = state.history.findIndex((hist: ScopeHistoryType) => hist.scope === action.payload.scope);
+      if (validation === -1) {
+        state.history[action.payload.index] = {
+          data: action.payload.data,
+          scope: action.payload.scope
+        }
       }
+      state.currentHistory = action.payload.currentHistory
     },
   },
 })
