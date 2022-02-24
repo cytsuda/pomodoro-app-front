@@ -34,6 +34,12 @@ type StateType = {
   loading: boolean;
   progress: number;
 }
+type SoundProps = {
+  work?: HTMLAudioElement,
+  short?: HTMLAudioElement,
+  long?: HTMLAudioElement,
+
+}
 
 // Desconstructor
 const { Countdown } = Statistic;
@@ -41,15 +47,35 @@ const { Text } = Typography;
 
 const CompactCountdown = () => {
   const { user, timer, task, pomo } = useSelector((state: RootState) => state);
+  const { sounds } = user.userConfig.preferenceConfig;
   const token = user.token;
   const { pomoConfig } = user.userConfig;
 
   const dispatch = useDispatch();
 
+  const [sound, setSound] = useState<SoundProps>({
+    work: undefined,
+    short: undefined,
+    long: undefined
+  })
+
   const [state, setState] = useState<StateType>({
     loading: false,
     progress: 0,
   });
+
+  // ----------------------------------------------------------------------------------------
+  useEffect(() => {
+    if (sounds) {
+      const { work, short, long } = sounds;
+      setSound({
+        work: new Audio(process.env.REACT_APP_SERVER_URL + work.url),
+        short: new Audio(process.env.REACT_APP_SERVER_URL + short.url),
+        long: new Audio(process.env.REACT_APP_SERVER_URL + long.url),
+      })
+    }
+  }, [sounds]);
+  // ----------------------------------------------------------------------------------------
 
   // Get duration base on pomoType
   const duration = useCallback((value: PomoWorkTypes) => {
@@ -116,8 +142,31 @@ const CompactCountdown = () => {
       message: timer.type === "work" ? "Pomodoro is finish" : "Break is over",
       description: ``
     });
-
-  }, [dispatch, timer.type]);
+    if (sound.work && timer.type === "work") {
+      sound.work.addEventListener("canplaythrough", event => {
+        /* the audio is now playable; play it if permissions allow */
+        if (sound.work && timer.type === "work") {
+          sound.work.play();
+        }
+      });
+    }
+    if (sound.long && timer.type === "long_break") {
+      sound.long.addEventListener("canplaythrough", event => {
+        /* the audio is now playable; play it if permissions allow */
+        if (sound.long && timer.type === "long_break") {
+          sound.long.play();
+        }
+      });
+    }
+    if (sound.short && timer.type === "short_break") {
+      sound.short.addEventListener("canplaythrough", event => {
+        /* the audio is now playable; play it if permissions allow */
+        if (sound.short && timer.type === "short_break") {
+          sound.short.play();
+        }
+      });
+    }
+  }, [dispatch, sound.long, sound.short, sound.work, timer.type]);
 
   const onFinishPomo = useCallback(async () => {
     setState(produce(draft => {

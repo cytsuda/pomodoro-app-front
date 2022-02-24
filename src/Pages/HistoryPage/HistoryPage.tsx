@@ -62,7 +62,7 @@ const HistoryPage = () => {
       const { pagination } = res.meta;
 
       const { historyArray, info } = historyFormat({ pomoArray: pomos, value: pagination.total });
-      
+
       setFilter({
         filterDay: true,
         month: moment(date).month(),
@@ -243,8 +243,10 @@ const HistoryPage = () => {
           />
         ) : (
           <List
+            className={classes.list}
             itemLayout="vertical"
             size="large"
+            bordered
             pagination={{
               onShowSizeChange: (current, size) => {
                 setPageSize(size);
@@ -253,9 +255,9 @@ const HistoryPage = () => {
             }}
             dataSource={history.history[filter.month] ? history.history[filter.month].data : []}
             header={
-              <div>
+              <b>
                 Month Pomo
-              </div>
+              </b>
             }
             renderItem={(item: ScopeHistoryDateType) => (
               <List.Item key={item.day} className={classes.listItem}>
@@ -288,33 +290,3 @@ const checkDate = (check: ScopeHistoryDateType | undefined) => {
     return [];
   }
 }
-
-/*
-
- <List
-            itemLayout="vertical"
-            size="large"
-            pagination={{
-              onShowSizeChange: (current, size) => {
-                setPageSize(size);
-              },
-              pageSize: pageSize,
-            }}
-            dataSource={history.history[filter.month] ? [].concat.apply([], history.history[filter.month].data.map((item: ScopeHistoryDateType) => item.pomos)) : []}
-            header={
-              <div>
-                Month Pomo
-              </div>
-            }
-            footer={
-              <div>
-                <b>ant design</b> footer part
-              </div>
-            }
-            renderItem={(item: PomoType) => (
-              <List.Item key={item.id}>
-                {item.id} - {item.attributes.type} - {item.attributes.status}
-              </List.Item>
-            )}
-          />
-*/
