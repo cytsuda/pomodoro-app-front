@@ -10,11 +10,11 @@ const api = (token?: string) => axios.create({
 
 // TODO - optimize this thing
 export const path = {
-  apiRegister: "api/auth/local/register",
-  apiLogin: "api/auth/local",
-  apiMe: "api/users/me",
-  apiTasks: "api/tasks",
-  apiPomos: "api/pomos",
+  apiRegister: "/api/auth/local/register",
+  apiLogin: "/api/auth/local",
+  apiMe: "/api/users/me",
+  apiTasks: "/api/tasks",
+  apiPomos: "/api/pomos",
   apiUserConfig: "/api/user-configs",
   // getPomos: `api/pomos?${getPomoQuery}`,
   // getrunning: `api/pomos?${queryFilterStatusrunning}`,

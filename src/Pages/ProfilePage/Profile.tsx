@@ -13,6 +13,7 @@ import { UserOutlined, EditOutlined } from '@ant-design/icons';
 // Custom Components
 import PomoConfigComponent from "@/Components/PomoConfigComponent/PomoConfigComponent";
 import GoalsConfigComponent from "@/Components/GoalsConfigComponent/GoalsConfigComponent";
+import PreferenceConfigComponent from "@/Components/PreferenceConfigComponent/PreferenceConfigComponent";
 
 // Classes and Styles
 import classes from "./Profile.module.less";
@@ -37,7 +38,7 @@ const ProfilePage = () => {
   }
   return (
     <div>
-      <Row gutter={[32, 24]}>
+      <Row gutter={[32, 32]}>
         <Col span={6}>
           <div className={classes.img}>
             <Avatar
@@ -84,6 +85,9 @@ const ProfilePage = () => {
         </Col>
         <Col span={8}>
           <GoalsConfigComponent />
+        </Col>
+        <Col span={8}>
+          <PreferenceConfigComponent />
         </Col>
 
       </Row>

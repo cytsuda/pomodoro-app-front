@@ -13,7 +13,6 @@ import { durationLength, convertTime } from "@/Utils/utils";
 import { useSelector, useDispatch } from "react-redux";
 import { timerStart, timerFinish, timerNext, timerRefresh } from "@/Redux/timerReducer";
 import { setPomos } from "@/Redux/pomosReducers";
-import { setHistory } from "@/Redux/historyReducer";
 import { getTasks } from "@/Redux/taskReducer"
 
 // Ant Design
@@ -126,16 +125,7 @@ function CountdownComponent({ user }: Props) {
       const updateTask = await axios(user.token).get(p.apiTasks + "?" + q.queryPopulateSubTasks);
       dispatch(getTasks(updateTask.data.data));
       const response = await axios(token).get(p.apiPomos + "?" + q.queryFilterToday());
-
-      // const { data: res } = await axios(token).get(p.apiPomos + "?" + q.queryAllPomoTime(moment(), 'month'));
-      // const { data: pomos } = res;
-      // const { pagination } = res.meta;
-      // const data = getAllPomosUtil({
-      //   array: pomos,
-      //   date: moment(),
-      //   total: pagination.total
-      // });
-      // dispatch(setHistory(data));
+      // TODO - [T001] check if history page change when pomo or break is finish
       dispatch(setPomos({ pomos: response.data.data, total: response.data.meta.pagination.total }));
 
       let newType: PomoWorkTypes = "work";

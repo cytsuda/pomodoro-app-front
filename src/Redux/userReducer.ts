@@ -15,6 +15,22 @@ const initialState: ControlType = {
       daily: 8,
       weekly: 8 * 5,
       monthly: 8 * 5 * 4,
+    },
+    preferenceConfig: {
+      sounds: {
+        work: {
+          title: "",
+          url: ""
+        },
+        short: {
+          title: "",
+          url: ""
+        },
+        long: {
+          title: "",
+          url: ""
+        },
+      }
     }
   }
 }
@@ -34,12 +50,16 @@ export const userSlice = createSlice({
     setPomoConfig: (state: ControlType, action: PayloadAction<UserConfigType>) => {
       state.userConfig.pomoConfig = action.payload.pomoConfig;
       state.userConfig.goalsConfig = action.payload.goalsConfig;
+      state.userConfig.preferenceConfig = action.payload.preferenceConfig;
       state.userConfig.id = action.payload.id;
+    },
+    setPrefSoundConfig: (state: ControlType, action: PayloadAction<PreferenceSoundType>) => {
+      state.userConfig.preferenceConfig.sounds = action.payload;
     }
   },
 })
 
 // Action creators are generated for each case reducer function
-export const { startLogin, getUser, setPomoConfig } = userSlice.actions
+export const { startLogin, getUser, setPomoConfig, setPrefSoundConfig } = userSlice.actions
 
 export default userSlice.reducer

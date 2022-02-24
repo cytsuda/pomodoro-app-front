@@ -1,0 +1,129 @@
+@import "~antd/lib/style/themes/dark.less";
+.info {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid @border-color-split;
+}
+
+.infoCtrl {
+  padding: 12px 16px 6px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  background-color: @background-color-light;
+  border-bottom: 1px solid @border-color-split;
+  &Btn {
+    margin-left: auto;
+    margin-right: 8px;
+    margin-top: auto;
+    margin-bottom: auto;
+    &Inner {
+      opacity: 0;
+      transform: translateX(+100%) scale(0);
+      visibility: hidden;
+      &.active {
+        transform: translateX(0) scale(1);
+        opacity: 1;
+        visibility: visible;
+      }
+    }
+  }
+  &Edit {
+    font-size: 20px;
+    padding: 6px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    color: @disabled-color;
+    &:hover {
+      color: @primary-color;
+      background-color: @btn-text-hover-bg;
+    }
+    &.active {
+      color: @primary-color;
+      &:hover {
+        background-color: @btn-text-hover-bg;
+        color: @primary-7;
+      }
+    }
+  }
+}
+
+.formBody {
+  padding: 8px 16px;
+}
+
+.option {
+  text-transform: capitalize;
+}
+
+.hidden {
+  display: none;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  grid-gap: 16px;
+  &Item {
+    flex: 1;
+  }
+
+  &Button {
+    min-width: 95px;
+    margin-bottom: 24px;
+  }
+}
+.label {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  &Info {
+    font-size: 16px;
+    font-weight: 600;
+    padding-bottom: 8px;
+    &Edit {
+      font-size: 16px;
+      font-weight: 600;
+      padding-bottom: 0px;
+    }
+  }
+  &Value {
+    flex: 1;
+    margin-bottom: 24px;
+    text-transform: capitalize;
+    padding: 0 12px;
+    border: 1px solid fade(@border-color-base, 20%);
+    border-radius: @border-radius-base;
+    height: 32px;
+    line-height: 30px;
+  }
+}
+
+.text {
+  &Work {
+    color: @red-6;
+    font-weight: 700;
+  }
+  &Short {
+    color: @cyan-6;
+    font-weight: 700;
+  }
+  &Long {
+    color: @blue-6;
+    font-weight: 700;
+  }
+}
+
+.divider {
+  padding: 0;
+  margin: 0;
+  margin-bottom: 12px;
+}
+.select {
+  width: 100%;
+  height: auto;
+  text-transform: capitalize;
+}

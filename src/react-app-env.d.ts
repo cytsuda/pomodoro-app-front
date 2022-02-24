@@ -45,14 +45,28 @@ type CurrentHistoryType = {
 type ControlType = {
   token?: string;
   user?: UserType;
-  userConfig: UserConfigType
+  userConfig: UserConfigType;
 }
 
 type UserConfigType = {
   id: string;
   pomoConfig: PomoConfigType;
-  // preferenceCOnfig
+  preferenceConfig: PreferenceConfigType;
   goalsConfig: GoalsConfigType;
+}
+type PreferenceConfigType = {
+  sounds: PreferenceSoundType
+}
+
+type PreferenceSoundType = {
+  work: PreferenceSoundAttrType;
+  short: PreferenceSoundAttrType;
+  long: PreferenceSoundAttrType;
+}
+
+type PreferenceSoundAttrType = {
+  title: string;
+  url: string;
 }
 
 type UserType = {

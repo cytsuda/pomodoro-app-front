@@ -71,23 +71,20 @@ const PomoConfigComponent = ({ onClose }: Props) => {
         });
       }
       const { data: result } = await axios(token).get(p.apiUserConfig);
-      if (result.data) {
-        const { id, attributes } = result.data;
+      if (result.data[0]) {
+        const { id, attributes } = result.data[0];
         const controlValues = {
           id: id,
           pomoConfig: attributes.pomoConfig,
           goalsConfig: attributes.goalsConfig,
+          preferenceConfig: attributes.preferenceConfig,
         }
         dispatch(setPomoConfig(controlValues));
         if (onClose) {
           onClose();
         }
       }
-      /**
-        state.userConfig.pomoConfig = action.payload.pomoConfig;
-        state.userConfig.goalsConfig = action.payload.goalsConfig;
-        state.userConfig.id = action.payload.id;
-       */
+
       setEdit(false);
     } catch (err) {
       if (request.isAxiosError(err) && err.response) {

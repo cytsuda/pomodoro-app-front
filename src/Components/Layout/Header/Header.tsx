@@ -8,7 +8,7 @@ import { useSelector } from "react-redux";
 
 // Ant Design components
 import { Menu, Avatar, Dropdown, Typography, Layout } from "antd";
-import { UserOutlined, SettingOutlined, LogoutOutlined, DashboardOutlined } from '@ant-design/icons';
+import { UserOutlined, LogoutOutlined } from '@ant-design/icons';
 
 // Custom Component
 import CompactCountdown from "@/Components/CompactCountdown/CompactCountdown";
@@ -39,16 +39,7 @@ const HeaderComponent = (props: HeaderComponentType) => {
         Profile
       </Link>
     </Menu.Item>
-    <Menu.Item key="2" icon={<DashboardOutlined />}>
-      <Link to="/preferences">
-        Preferences
-      </Link>
-    </Menu.Item>
-    <Menu.Item key="3" icon={<SettingOutlined />}>
-      <Link to="/setting">
-        Settings
-      </Link>
-    </Menu.Item>
+
     <Menu.Divider />
     <Menu.Item key="logout" icon={<LogoutOutlined />} onClick={logout}>
       Logout
