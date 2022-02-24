@@ -20,7 +20,7 @@ import InfoComponent from "@/Components/InfoComponent/InfoComponent";
 import openNotification from "@/Components/Notification/Notification";
 
 // Utils
-import { checkDailyWeek, weekOfMonth } from "@/Utils/utils";
+import { historyFormat } from "@/Utils/utils";
 
 // Class & Styles
 import classes from "./HistoryPage.module.less";
@@ -61,66 +61,21 @@ const HistoryPage = () => {
       const { data: pomos } = res;
       const { pagination } = res.meta;
 
-      let scopeHistoryDate: ScopeHistoryDateType[] = [];
-
-      let dayPomo = 0;
-      let weekPomo = 0;
-      let totalDays = 0;
-      let totalWeeks: string[] = [];
-      pomos.forEach((pomo: PomoType, index: number) => {
-        const check = checkDailyWeek(moment(pomo.attributes.start));
-        if (check === "day") {
-          dayPomo += 1;
-          weekPomo += 1;
-        } else if (check === "week") {
-          weekPomo += 1;
-        }
-
-        if (index === 0) {
-          scopeHistoryDate.push({
-            day: moment(pomo.attributes.start).format('YYYY-MM-DD'),
-            week: weekOfMonth(moment(pomo.attributes.start)).toString(),
-            pomos: [pomo],
-          });
-          totalDays += 1;
-          totalWeeks.push(weekOfMonth(moment(pomo.attributes.start)).toString());
-        } else {
-          let scopeIndex = scopeHistoryDate.findIndex((item: ScopeHistoryDateType) => item.day === moment(pomo.attributes.start).format('YYYY-MM-DD'))
-          if (scopeIndex === -1) {
-            scopeHistoryDate.push({
-              day: moment(pomo.attributes.start).format('YYYY-MM-DD'),
-              week: weekOfMonth(moment(pomo.attributes.start)).toString(),
-              pomos: [pomo],
-            });
-            totalDays += 1;
-            const weekScopeIndex = totalWeeks.findIndex((item: string) => item === weekOfMonth(moment(pomo.attributes.start)).toString());
-            if (weekScopeIndex === -1) {
-              totalWeeks.push(weekOfMonth(moment(pomo.attributes.start)).toString());
-            }
-          } else {
-            scopeHistoryDate[scopeIndex].pomos.push(pomo)
-          }
-        }
-      });
-
-      let currentHistory: CurrentHistoryType = {
-        dailyPomos: dayPomo,
-        weekPomos: weekPomo,
-        monthPomos: pagination.total,
-        totalDays: totalDays,
-        totalWeeks: totalWeeks.length,
-      }
+      const { historyArray, info } = historyFormat({ pomoArray: pomos, value: pagination.total });
+      
       setFilter({
         filterDay: true,
         month: moment(date).month(),
         day: moment().format()
-      })
+      });
+
       dispatch(setHistory({
         index: moment(date).month(),
         scope: moment().format("YYYY-MM"),
-        data: scopeHistoryDate,
-        currentHistory: currentHistory
-      }))
+        data: historyArray,
+        currentHistory: info
+      }));
+
       if (alert) {
         openNotification({
           type: 'success',

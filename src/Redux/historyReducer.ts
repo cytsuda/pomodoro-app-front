@@ -50,15 +50,12 @@ export const historySlice = createSlice({
   initialState,
   reducers: {
     setHistory: (state: HistoryType, action: PayloadAction<SetHistoryType>) => {
-
-      const validation = state.history.findIndex((hist: ScopeHistoryType) => hist.scope === action.payload.scope);
-      if (validation === -1) {
-        state.history[action.payload.index] = {
-          data: action.payload.data,
-          scope: action.payload.scope
-        }
+      state.history[action.payload.index] = {
+        data: action.payload.data,
+        scope: action.payload.scope
       }
       state.currentHistory = action.payload.currentHistory
+
     },
   },
 })

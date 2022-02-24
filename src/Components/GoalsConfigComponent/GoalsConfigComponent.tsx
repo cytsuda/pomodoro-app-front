@@ -29,7 +29,6 @@ const GoalsConfigComponent = () => {
   const [form] = Form.useForm();
 
   const handleSave = useCallback(async (e) => {
-    // TODO - add feedback when something is success / fail on change
     try {
       const res = await axios(token).put(p.apiUserConfig + q.queryID(e.id), {
         data: {

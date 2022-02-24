@@ -231,7 +231,6 @@ const PreferenceConfigComponent = () => {
   }, []);
   // -----------------------------------------------------
   const handleSave = useCallback(async (values: ValuesType) => {
-    // TODO - SAVE
     const { work, long, short, id } = values;
     let newSoundPrefConfig = { ...sounds };
 

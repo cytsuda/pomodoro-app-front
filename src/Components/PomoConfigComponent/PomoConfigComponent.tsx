@@ -51,7 +51,6 @@ const PomoConfigComponent = ({ onClose }: Props) => {
 
   const handleSave = useCallback(async (e) => {
     setEdit(false);
-    // TODO - add feedback when something is success / fail on change
     try {
       const res = await axios(token).put(p.apiUserConfig + q.queryID(e.id), {
         data: {

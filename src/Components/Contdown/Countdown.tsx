@@ -14,6 +14,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { timerStart, timerFinish, timerNext, timerRefresh } from "@/Redux/timerReducer";
 import { setPomos } from "@/Redux/pomosReducers";
 import { getTasks } from "@/Redux/taskReducer"
+import { setHistory } from "@/Redux/historyReducer";
 
 // Ant Design
 import { Progress, Statistic, Typography, Modal } from "antd"
@@ -27,7 +28,7 @@ import PomoConfigComponent from "@/Components/PomoConfigComponent/PomoConfigComp
 import openNotification from "@/Components/Notification/Notification";
 
 // Utils
-// import { getAllPomosUtil } from "@/Utils/utils";
+import { historyFormat } from "@/Utils/utils";
 
 // Classes & Styles
 import classes from "./Countdown.module.less";
@@ -115,17 +116,31 @@ function CountdownComponent({ user }: Props) {
     setLoading(true);
     try {
       const workTasks = task.data.filter((item: FetchedTaskType) => item.attributes.intermediate || (!item.attributes.completeDate && item.attributes.complete));
-      await axios(token).put(p.apiPomos + q.queryID(timer.pomoID), {
+      const { data: finish } = await axios(token).put(p.apiPomos + q.queryID(timer.pomoID), {
         data: {
           finish: true,
           tasks: workTasks,
         }
       });
+      if (finish.data.attributes.type === "work") {
+        const date = moment();
+        const { data: res } = await axios(token).get(p.apiPomos + "?" + q.queryAllPomoTime(date, 'month'));
+        const { data: pomos } = res;
+        const { pagination } = res.meta;
+        const { historyArray, info } = historyFormat({ pomoArray: pomos, value: pagination.total });
 
+        const scopeData = moment().format("YYYY-MM");
+
+        dispatch(setHistory({
+          index: moment(date).month(),
+          scope: scopeData,
+          data: historyArray,
+          currentHistory: info
+        }));
+      }
       const updateTask = await axios(user.token).get(p.apiTasks + "?" + q.queryPopulateSubTasks);
       dispatch(getTasks(updateTask.data.data));
       const response = await axios(token).get(p.apiPomos + "?" + q.queryFilterToday());
-      // TODO - [T001] check if history page change when pomo or break is finish
       dispatch(setPomos({ pomos: response.data.data, total: response.data.meta.pagination.total }));
 
       let newType: PomoWorkTypes = "work";

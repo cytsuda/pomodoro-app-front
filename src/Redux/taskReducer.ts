@@ -15,7 +15,6 @@ export const taskSlice = createSlice({
     },
     failTask: (state) => {
       state.loading = false;
-      // TODO - add error too
     },
     getTasks: (state, action: PayloadAction<FetchedTaskType[]>) => {
       state.loading = false;

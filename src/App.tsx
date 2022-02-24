@@ -20,7 +20,6 @@ function App() {
       <Route path="/" element={<Layout />}>
         <Route path="profile" element={<ProfilePage />} />
         <Route path="history" element={<HistoryPage />} />
-        {/* TODO - create page for history & reports*/}
         {/* TODO - create page for tasks & subtasks*/}
         <Route path="task" element={<TaskPage />} />
         <Route index element={<ClockPage />} />

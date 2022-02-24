@@ -25,7 +25,7 @@ import { durationLength, convertTime } from "@/Utils/utils";
 import openNotification from "@/Components/Notification/Notification";
 
 // Utils
-// import { getAllPomosUtil } from "@/Utils/utils";
+import { historyFormat } from "@/Utils/utils";
 
 // ClassName & Styles
 import classes from "./CompactCountdown.module.less";
@@ -126,7 +126,7 @@ const CompactCountdown = () => {
 
     try {
       const workTasks = task.data.filter((item: FetchedTaskType) => item.attributes.intermediate || (!item.attributes.completeDate && item.attributes.complete));
-      await axios(token).put(p.apiPomos + q.queryID(timer.pomoID), {
+      const { data: finish } = await axios(token).put(p.apiPomos + q.queryID(timer.pomoID), {
         data: {
           finish: true,
           tasks: workTasks,
@@ -138,15 +138,22 @@ const CompactCountdown = () => {
       const response = await axios(token).get(p.apiPomos + "?" + q.queryFilterToday());
       dispatch(setPomos({ pomos: response.data.data, total: response.data.meta.pagination.total }));
 
-      // const { data: res } = await axios(token).get(p.apiPomos + "?" + q.queryAllPomoTime(moment(), 'month'));
-      // const { data: pomos } = res;
-      // const { pagination } = res.meta;
-      // const data = getAllPomosUtil({
-      //   array: pomos,
-      //   date: moment(),
-      //   total: pagination.total
-      // });
-      // dispatch(setHistory(data));
+      if (finish.data.attributes.type === "work") {
+        const date = moment();
+        const { data: res } = await axios(token).get(p.apiPomos + "?" + q.queryAllPomoTime(date, 'month'));
+        const { data: pomos } = res;
+        const { pagination } = res.meta;
+        const { historyArray, info } = historyFormat({ pomoArray: pomos, value: pagination.total });
+
+        const scopeData = moment().format("YYYY-MM");
+
+        dispatch(setHistory({
+          index: moment(date).month(),
+          scope: scopeData,
+          data: historyArray,
+          currentHistory: info
+        }));
+      }
 
       let newType: PomoWorkTypes = "work";
       if (timer.type === "work") {
@@ -347,7 +354,6 @@ const CompactCountdown = () => {
             </Text>
           </div>
         )}
-        {/* TODO add diferent colors for work/short/long */}
         {timer.status === "running" && (
           <div className={clsx(classes.progress, getBtnClass(timer.type))}>
             <div className={classes.progressText} onClick={onStop}>
@@ -361,7 +367,6 @@ const CompactCountdown = () => {
               />
               <div
                 className={clsx(classes.progressVal, getBtnClass(timer.type))}
-                // style={{ width: `${state.progress}%` }}
                 style={{ width: `${state.progress}%` }}
               />
             </div>
@@ -395,13 +400,3 @@ const getBtnClass = (type: PomoWorkTypes): string => {
       return ""
   }
 }
-/* onClick={() => onStart(timer.type)}
-          <div className={classes.container}>
-            <Countdown
-              value={moment(timer.end).format()}
-              format={"mm:ss"}
-              onChange={onChangeCountdown}
-              onFinish={onAutoFinish}
-            />
-          </div>
-*/

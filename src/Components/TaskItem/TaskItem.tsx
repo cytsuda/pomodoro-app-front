@@ -76,7 +76,6 @@ const TaskItem = ({ data, id, disabled = false }: TaskItemPropType) => {
     }
   }
 
-  // TODO - when pomo is finish intermediate need to be false
   const handleComplete = useCallback(async (e: CheckboxChangeEvent) => {
     dispatch(loadingTask());
     let updateData = {
