@@ -19,7 +19,8 @@ import axios, { path as p } from "@/Utils/apiController";
 
 // Custom component
 import LoginTab from "./LoginTab/LoginTab";
-import RegisterTab from "./RegisterTab/RegisterTab"
+import RegisterTab from "./RegisterTab/RegisterTab";
+import openNotification from "@/Components/Notification/Notification";
 
 // Classes & Styles
 import classes from "./AuthPage.module.less";
@@ -75,8 +76,20 @@ const LoginPage = () => {
       }
     } catch (err) {
       if (request.isAxiosError(err) && err.response) {
-        const { error } = err.response.data;
-        console.log(error)
+        const { data } = err.response;
+        const { error } = data;
+        openNotification({
+          type: 'error',
+          message: "An error has occurred",
+          description: `Error: ${error.message}`
+        });
+      } else {
+        console.log(err);
+        openNotification({
+          type: 'error',
+          message: "An error has occurred",
+          description: `Error: unknown error.`
+        });
       }
     }
     setTab(prev => ({ ...prev, loading: false }));
@@ -98,8 +111,20 @@ const LoginPage = () => {
       setCookie("token", jwt, { path: "/", secure: true });
     } catch (err) {
       if (request.isAxiosError(err) && err.response) {
-        const { error } = err.response.data;
-        console.log(error)
+        const { data } = err.response;
+        const { error } = data;
+        openNotification({
+          type: 'error',
+          message: "An error has occurred",
+          description: `Error: ${error.message}`
+        });
+      } else {
+        console.log(err);
+        openNotification({
+          type: 'error',
+          message: "An error has occurred",
+          description: `Error: unknown error.`
+        });
       }
     }
     setTab(prev => ({ ...prev, loading: false }));

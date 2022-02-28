@@ -72,11 +72,16 @@ const queryFilterToday = () => {
 
 // Const query month
 
-const queryAllPomoTime = (date: Moment, scope: "month" | "year") => {
+const queryAllPomoTime = (date: Moment, scope: "month" | "year", page?: number) => {
   const startTime = moment().startOf(scope);
   const endTime = moment().endOf(scope);
+  const actualPage = page || 1;
 
   return qs.stringify({
+    pagination: {
+      page: actualPage,
+      pageSize: 100,
+    },
     populate: [
       "tasks"
     ],

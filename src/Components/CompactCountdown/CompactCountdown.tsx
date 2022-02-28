@@ -35,9 +35,9 @@ type StateType = {
   progress: number;
 }
 type SoundProps = {
-  work?: HTMLAudioElement,
-  short?: HTMLAudioElement,
-  long?: HTMLAudioElement,
+  work?: string,
+  short?: string,
+  long?: string,
 
 }
 
@@ -69,12 +69,13 @@ const CompactCountdown = () => {
     if (sounds) {
       const { work, short, long } = sounds;
       setSound({
-        work: new Audio(process.env.REACT_APP_SERVER_URL + work.url),
-        short: new Audio(process.env.REACT_APP_SERVER_URL + short.url),
-        long: new Audio(process.env.REACT_APP_SERVER_URL + long.url),
+        work: process.env.REACT_APP_SERVER_URL + work.url,
+        short: process.env.REACT_APP_SERVER_URL + short.url,
+        long: process.env.REACT_APP_SERVER_URL + long.url,
       })
     }
   }, [sounds]);
+
   // ----------------------------------------------------------------------------------------
 
   // Get duration base on pomoType
@@ -143,27 +144,21 @@ const CompactCountdown = () => {
       description: ``
     });
     if (sound.work && timer.type === "work") {
-      sound.work.addEventListener("canplaythrough", event => {
-        /* the audio is now playable; play it if permissions allow */
-        if (sound.work && timer.type === "work") {
-          sound.work.play();
-        }
-      });
-    }
-    if (sound.long && timer.type === "long_break") {
-      sound.long.addEventListener("canplaythrough", event => {
-        /* the audio is now playable; play it if permissions allow */
-        if (sound.long && timer.type === "long_break") {
-          sound.long.play();
-        }
+      const newAudio = new Audio(sound.work);
+      newAudio.addEventListener("canplaythrough", event => {
+        newAudio.play();
       });
     }
     if (sound.short && timer.type === "short_break") {
-      sound.short.addEventListener("canplaythrough", event => {
-        /* the audio is now playable; play it if permissions allow */
-        if (sound.short && timer.type === "short_break") {
-          sound.short.play();
-        }
+      const newAudio = new Audio(sound.short);
+      newAudio.addEventListener("canplaythrough", event => {
+        newAudio.play();
+      });
+    }
+    if (sound.long && timer.type === "long_long") {
+      const newAudio = new Audio(sound.long);
+      newAudio.addEventListener("canplaythrough", event => {
+        newAudio.play();
       });
     }
   }, [dispatch, sound.long, sound.short, sound.work, timer.type]);

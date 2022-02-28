@@ -57,11 +57,18 @@ const HistoryPage = () => {
 
   const getAllPomosMonth = useCallback(async (date: Moment, alert: boolean = false) => {
     try {
-      const { data: res } = await axios(token).get(p.apiPomos + "?" + q.queryAllPomoTime(date, 'month'));
-      const { data: pomos } = res;
-      const { pagination } = res.meta;
-
-      const { historyArray, info } = historyFormat({ pomoArray: pomos, value: pagination.total });
+      const response = await axios(token).get(p.apiPomos + "?" + q.queryAllPomoTime(date, 'month'));
+      const { pagination } = response.data.meta;
+      const { data: pomos } = response.data;
+      let monthlyPomos = [...pomos];
+      for (let ind = 0; ind < pagination.pageCount; ind++) {
+        if (ind !== 0) {
+          const newResp = await axios(token).get(p.apiPomos + "?" + q.queryAllPomoTime(date, 'month', ind + 1));
+          const { data: newPomos } = newResp.data;
+          monthlyPomos = monthlyPomos.concat(newPomos);
+        }
+      }
+      const { historyArray, info } = historyFormat({ pomoArray: monthlyPomos, value: pagination.total });
 
       setFilter({
         filterDay: true,
@@ -124,7 +131,9 @@ const HistoryPage = () => {
     }
   }
   const changeDay = (value: Moment) => {
-    if (value.isSame(moment(), "month")) {
+
+    if (moment(value).isSame(moment(), "month")) {
+      console.log(checkDate(history.history[filter.month].data.filter((item: ScopeHistoryDateType) => moment(item.day).isSame(moment(filter.day), "day"))[0]))
       setFilter(prev => ({
         ...prev,
         month: value.month(),
