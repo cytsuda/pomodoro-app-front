@@ -40,12 +40,14 @@ type SoundProps = {
   long?: string,
 
 }
-
+type Props = {
+  mobile?: boolean
+}
 // Desconstructor
 const { Countdown } = Statistic;
 const { Text } = Typography;
 
-const CompactCountdown = () => {
+const CompactCountdown = ({ mobile = false }: Props) => {
   const { user, timer, task, pomo } = useSelector((state: RootState) => state);
   const { sounds } = user.userConfig.preferenceConfig;
   const token = user.token;
@@ -389,43 +391,45 @@ const CompactCountdown = () => {
 
   return (
     <div className={classes.wrapper}>
-      <Affix offsetTop={10}>
-        {timer.status === "waiting" && (
-          <div className={clsx(classes.container, getBtnClass(timer.type))} onClick={() => onStart(timer.type)}>
-            <PlayCircleOutlined />
-            <Text>
-              Start
-            </Text>
-          </div>
-        )}
-        {timer.status === "running" && (
-          <div className={clsx(classes.progress, getBtnClass(timer.type))}>
-            <div className={classes.progressText} onClick={onStop}>
-              <HourglassOutlined />
-              <Countdown
-                value={moment(timer.end).format()}
-                format={"mm:ss"}
-                onChange={onChangeCountdown}
-                onFinish={onAutoFinish}
-                valueStyle={{ fontSize: 18, lineHeight: "44px" }}
-              />
-              <div
-                className={clsx(classes.progressVal, getBtnClass(timer.type))}
-                style={{ width: `${state.progress}%` }}
-              />
+      <MobileController mobile={mobile}>
+        <>
+          {timer.status === "waiting" && (
+            <div className={clsx(classes.container, mobile && classes.mobile, getBtnClass(timer.type))} onClick={() => onStart(timer.type)}>
+              <PlayCircleOutlined />
+              <Text>
+                Start
+              </Text>
             </div>
+          )}
+          {timer.status === "running" && (
+            <div className={clsx(classes.progress, getBtnClass(timer.type))}>
+              <div className={classes.progressText} onClick={onStop}>
+                <HourglassOutlined />
+                <Countdown
+                  value={moment(timer.end).format()}
+                  format={"mm:ss"}
+                  onChange={onChangeCountdown}
+                  onFinish={onAutoFinish}
+                  valueStyle={{ fontSize: 18, lineHeight: "44px" }}
+                />
+                <div
+                  className={clsx(classes.progressVal, getBtnClass(timer.type))}
+                  style={{ width: `${state.progress}%` }}
+                />
+              </div>
 
-          </div>
-        )}
-        {timer.status === "finish" && (
-          <div className={classes.finish} onClick={onFinishPomo}>
-            <CheckCircleOutlined />
-            <Text>
-              Finish
-            </Text>
-          </div>
-        )}
-      </Affix>
+            </div>
+          )}
+          {timer.status === "finish" && (
+            <div className={classes.finish} onClick={onFinishPomo}>
+              <CheckCircleOutlined />
+              <Text>
+                Finish
+              </Text>
+            </div>
+          )}
+        </>
+      </MobileController>
     </div >
   );
 }
@@ -442,5 +446,19 @@ const getBtnClass = (type: PomoWorkTypes): string => {
       return classes.long;
     default:
       return ""
+  }
+}
+type MobileProps = {
+  mobile: boolean;
+  children: JSX.Element
+}
+const MobileController = ({ mobile, children }: MobileProps) => {
+  if (mobile) {
+    return <>{children}</>
+  } else {
+    return (
+
+      <Affix offsetTop={10}>{children}</Affix>
+    )
   }
 }

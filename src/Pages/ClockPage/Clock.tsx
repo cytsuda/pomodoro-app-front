@@ -1,5 +1,5 @@
 // AntDesign Components & icons
-import { Typography } from "antd";
+import { Typography, Row, Col } from "antd";
 
 // Redux
 import { useSelector } from "react-redux";
@@ -24,13 +24,15 @@ const ClockPage = () => {
       <Title level={2}>
         Clock/Working Page
       </Title>
-      <div className={classes.container}>
-        <PomoController className={classes.small} user={user} task={task} />
-        <div className={classes.big}>
+      <Row gutter={[16, 16]}>
+        <Col xs={24} md={6}>
+          <PomoController user={user} task={task} />
+        </Col>
+        <Col xs={24} md={18}>
           <TaskListComponent user={user} task={task} />
-        </div>
-        <TimeLineComponent className={classes.full} pomo={pomo} />
-      </div >
+        </Col>
+      </Row>
+      <TimeLineComponent pomo={pomo} />
     </div >
   );
 }

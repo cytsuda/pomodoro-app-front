@@ -4,6 +4,10 @@
   display: flex;
   align-items: stretch;
   grid-gap: 4px;
+  &.small {
+    flex-direction: column;
+    margin-bottom: 8px;
+  }
 }
 
 .todo {
@@ -14,12 +18,20 @@
   display: flex;
   align-items: center;
   box-shadow: @btn-primary-shadow;
+  &.small {
+    padding: 12px 16px;
+  }
+  &Item {
+    flex: 1;
+    display: flex;
+  }
 }
 
 .checkbox {
   user-select: none;
   margin-left: 8px;
   cursor: pointer;
+  flex: 1;
   &.checked {
     color: @primary-color;
   }
@@ -34,6 +46,7 @@
     border: 1px solid @border-color-split;
     padding: 2px 8px;
     border-radius: 4px;
+    flex: 1;
   }
   &Text {
     margin-left: 16px;
@@ -48,4 +61,8 @@
   align-items: center;
   grid-gap: 8px;
   box-shadow: @btn-primary-shadow;
+  &.small {
+    padding: 12px;
+    justify-content: flex-end;
+  }
 }

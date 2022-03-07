@@ -1,7 +1,7 @@
 import React from "react";
 
 // Ant Design
-import { Card, Progress, Typography, Tooltip } from "antd";
+import { Card, Progress, Typography, Tooltip, Row, Col } from "antd";
 import { InfoCircleOutlined } from '@ant-design/icons';
 
 // Classes & Styles
@@ -60,26 +60,32 @@ const InfoComponent = ({ day, week, month }: Props) => {
           </Text>
         </Tooltip>
       </Title>
-      <div className={classes.col}>
-        <CardInfo
-          title="Today"
-          text="Total pomos done today"
-          done={day.done}
-          goal={day.goal}
-        />
-        <CardInfo
-          title="Week"
-          text="Total pomos this week"
-          done={week.done}
-          goal={week.goal}
-        />
-        <CardInfo
-          title="Month"
-          text="Total pomos done month"
-          done={month.done}
-          goal={month.goal}
-        />
-      </div>
+      <Row gutter={[16, 16]} >
+        <Col xs={24} sm={12} lg={8}>
+          <CardInfo
+            title="Today"
+            text="Total pomos done today"
+            done={day.done}
+            goal={day.goal}
+          />
+        </Col>
+        <Col xs={24} sm={12} lg={8}>
+          <CardInfo
+            title="Week"
+            text="Total pomos this week"
+            done={week.done}
+            goal={week.goal}
+          />
+        </Col>
+        <Col xs={24} sm={12} lg={8}>
+          <CardInfo
+            title="Month"
+            text="Total pomos done month"
+            done={month.done}
+            goal={month.goal}
+          />
+        </Col>
+      </Row>
     </div>
   );
 

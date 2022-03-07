@@ -1,5 +1,6 @@
 import React from "react";
 
+
 // React-Router
 import { Link } from "react-router-dom";
 
@@ -7,17 +8,16 @@ import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 // Ant Design components
-import { Menu, Avatar, Dropdown, Typography, Layout } from "antd";
-import { UserOutlined, LogoutOutlined } from '@ant-design/icons';
+import { Layout } from "antd";
 
 // Custom Component
 import CompactCountdown from "@/Components/CompactCountdown/CompactCountdown";
+import AvatarMenu from "@/Components/Layout/AvatarMenu/AvatarMenu";
 
 // class & Styles
 import classes from "./Header.module.less";
 
 // Desconstructor
-const { Text } = Typography;
 const { Header } = Layout;
 
 type HeaderComponentType = {
@@ -28,41 +28,19 @@ const HeaderComponent = (props: HeaderComponentType) => {
   const { logout } = props;
   const user = useSelector((state: RootState) => state.user.user);
 
-  const AvatarMenu = <Menu
-    theme="light"
-    mode="vertical"
-    style={{ lineHeight: "inherit" }}
-
-  >
-    <Menu.Item key="1" icon={<UserOutlined />}>
-      <Link to="/profile">
-        Profile
-      </Link>
-    </Menu.Item>
-
-    <Menu.Divider />
-    <Menu.Item key="logout" icon={<LogoutOutlined />} onClick={logout}>
-      Logout
-    </Menu.Item>
-  </Menu>
-
   return (
     <Header className={classes.header}>
+
       <div className={classes.logo}>
-        <Text className={classes.logoText}>
-          MyAPP
-        </Text>
+        <Link to="/">
+          <img className={classes.logoText}
+            src="/logo.png"
+            alt="Logo"
+          />
+        </Link>
       </div>
 
-      <div className={classes.control}>
-        <Dropdown overlay={AvatarMenu} placement="bottomRight">
-          <div className={classes.controlAvatar}>
-            <Avatar icon={<UserOutlined />} size="small" />
-            <Text>{user ? user.username : "Loading"}</Text>
-          </div>
-        </Dropdown>
-      </div>
-
+      <AvatarMenu logout={logout} user={user} />
       <CompactCountdown />
     </Header>
   );

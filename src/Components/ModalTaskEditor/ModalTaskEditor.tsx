@@ -4,7 +4,7 @@ import { useState } from "react";
 import {
   Modal,
   Tooltip,
-  Button,
+  Button, Grid
 } from "antd"
 import {
   EditFilled
@@ -17,6 +17,9 @@ import classes from "./ModalTaskEditor.module.less";
 // Custom Component
 import TaskComponent from "@/Components/TaskFormComponent/TaskFormComponent";
 
+// Desconstructor
+const { useBreakpoint } = Grid;
+
 // Types
 type TaskEditorPropType = {
   data: TaskType;
@@ -27,6 +30,7 @@ type TaskEditorPropType = {
 
 const TaskEditor = ({ data, id, editable, children }: TaskEditorPropType) => {
   const [open, setOpen] = useState(false);
+  const screens = useBreakpoint();
 
   return (
     <>
@@ -37,11 +41,13 @@ const TaskEditor = ({ data, id, editable, children }: TaskEditorPropType) => {
       ) : (
         <Tooltip title="Edit">
           <Button
-            shape="circle"
+            shape={!screens.sm ? "round" : "circle"}
             icon={<EditFilled />}
-            size="small"
+            size={!screens.sm ? "middle" : "small"}
             onClick={() => setOpen(true)}
-          />
+          >
+            {!screens.sm && "Edit"}
+          </Button>
         </Tooltip>
       )}
       <Modal

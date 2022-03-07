@@ -33,6 +33,7 @@ type ListItemMessageProps = {
   type: "pomo" | "task"
 }
 const ListItemMessage = ({ type, value }: ListItemMessageProps) => {
+
   if (value > 1) {
     return <Text type="success">{value} {type}s done</Text>
   } else if (value === 1) {
@@ -198,10 +199,9 @@ const HistoryPage = () => {
             goal: goals.monthly
           }}
         />
-        <Button onClick={() => getAllPomosMonth(moment())}>GET ALL POMOS</Button>
       </Col>
 
-      <Col span={14}>
+      <Col xs={24} lg={14}>
         <div className={classes.calendar}>
           <Calendar
             value={moment(filter.day)}
@@ -212,7 +212,7 @@ const HistoryPage = () => {
           />
         </div>
       </Col>
-      <Col span={10}>
+      <Col xs={24} lg={10}>
         {(history && history.history.length > 0) ? (filter.filterDay && history.history[filter.month]) ? (
           <List
             className={classes.list}

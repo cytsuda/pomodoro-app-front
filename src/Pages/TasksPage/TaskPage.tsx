@@ -21,7 +21,7 @@ const TaskPage = () => {
   const { user, task } = useSelector((state: RootState) => state);
   return (
     <Row gutter={[32, 32]}>
-      <Col span={8}>
+      <Col xs={24} lg={8}>
         <div className={classes.col}>
           <div className={classes.title}>
             <Title level={4}>Create a new Task</Title>
@@ -32,7 +32,7 @@ const TaskPage = () => {
           />
         </div>
       </Col>
-      <Col span={16} >
+      <Col xs={24} lg={16} >
         <TaskListComponent
           task={task}
           user={user}

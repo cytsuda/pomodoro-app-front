@@ -11,7 +11,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { getTasks, loadingTask, failTask } from "@/Redux/taskReducer";
 
 // AntDesign
-import { Checkbox, Button, Tooltip, Popconfirm, notification } from "antd"
+import { Checkbox, Button, Tooltip, Popconfirm, notification, Grid } from "antd"
 import { CheckboxChangeEvent } from "antd/lib/checkbox";
 import { DeleteFilled } from '@ant-design/icons';
 
@@ -20,6 +20,9 @@ import TaskEditor from "@/Components/ModalTaskEditor/ModalTaskEditor";
 
 // Classes & Styles
 import classes from "./TaskItem.module.less";
+
+// Desconstructor
+const { useBreakpoint } = Grid;
 
 type TaskItemPropType = {
   data: TaskType;
@@ -30,6 +33,7 @@ type TaskItemPropType = {
 const TaskItem = ({ data, id, disabled = false }: TaskItemPropType) => {
 
   const dispatch = useDispatch();
+  const screens = useBreakpoint();
 
   const user = useSelector((state: RootState) => state.user);
 
@@ -172,19 +176,21 @@ const TaskItem = ({ data, id, disabled = false }: TaskItemPropType) => {
   }, [data.complete, data.intermediate, dispatch, id, user.token]);
 
   return (
-    <div className={classes.container}>
-      <div className={classes.todo} >
-        <Checkbox disabled={disabled} checked={data.complete} indeterminate={data.intermediate} onChange={handleComplete} />
-        <span
-          className={clsx(
-            classes.checkbox,
-            (data.complete || data.intermediate) && !disabled && classes.checked,
-            disabled && classes.disabled
-          )}
-          onClick={() => handleIntermediate(disabled)}
-        >
-          {data.title}
-        </span>
+    <div className={clsx(classes.container, !screens.sm && classes.small)}>
+      <div className={clsx(classes.todo, !screens.sm && classes.small)} >
+        <div className={classes.todoItem}>
+          <Checkbox disabled={disabled} checked={data.complete} indeterminate={data.intermediate} onChange={handleComplete} />
+          <span
+            className={clsx(
+              classes.checkbox,
+              (data.complete || data.intermediate) && !disabled && classes.checked,
+              disabled && classes.disabled
+            )}
+            onClick={() => handleIntermediate(disabled)}
+          >
+            {data.title}
+          </span>
+        </div>
         <div className={classes.end}>
           {(data.expectPomo && data.expectPomo > 0) ? (
             <Tooltip title="Expected pomos">
@@ -212,7 +218,7 @@ const TaskItem = ({ data, id, disabled = false }: TaskItemPropType) => {
       </div>
       {
         !disabled && (
-          <div className={classes.icons} >
+          <div className={clsx(classes.icons, !screens.sm && classes.small)} >
             <TaskEditor id={id} data={data} editable={true} />
             <Tooltip title="Delete">
               <Popconfirm
@@ -220,10 +226,10 @@ const TaskItem = ({ data, id, disabled = false }: TaskItemPropType) => {
                 onConfirm={handleDelete}
               >
                 <Button
-                  shape="circle"
+                  shape={!screens.sm ? "round" : "circle"}
                   icon={<DeleteFilled />}
-                  size="small"
-                />
+                  size={!screens.sm ? "middle" : "small"}
+                >{!screens.sm && "Delete"}</Button>
               </Popconfirm>
             </Tooltip>
           </div>

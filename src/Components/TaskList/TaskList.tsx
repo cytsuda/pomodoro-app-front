@@ -10,7 +10,7 @@ import { useDispatch } from "react-redux";
 import { getTasks, loadingTask, failTask } from "@/Redux/taskReducer"
 
 // Ant Design
-import { Typography, Button, Input, Divider, Alert, notification } from "antd";
+import { Typography, Button, Input, Divider, Alert } from "antd";
 import { SyncOutlined } from '@ant-design/icons';
 
 // Classes & Styles
@@ -18,6 +18,7 @@ import classes from "./TaskList.module.less";
 
 // Custom Components
 import TaskItem from "@/Components/TaskItem/TaskItem";
+import openNotification from "@/Components/Notification/Notification";
 
 // interface TaskListTypes {
 // }
@@ -40,14 +41,6 @@ const TaskListComponent = ({ user, task }: Props) => {
   // Ref
   const inputRef = useRef<Input>(null);
 
-  // ------------------------------------------
-  const openNotification = ({ message, description, type }: MsgProps) => {
-    notification[type]({
-      message: message,
-      description: description,
-      placement: "topRight",
-    });
-  }
 
   // ------------------------------------------
 

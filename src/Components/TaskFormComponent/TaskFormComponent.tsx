@@ -22,11 +22,14 @@ import {
   DatePicker,
   Tooltip,
   Button,
+  Grid,
   notification
 } from "antd";
 
 // Classes & Styles
 import classes from "./TaskFormComponent.module.less";
+
+const { useBreakpoint } = Grid;
 
 type Props = {
   editable: boolean;
@@ -40,6 +43,7 @@ const TaskComponent = ({ editable, data, id, onClose, display }: Props) => {
 
   const token = useSelector((state: RootState) => state.user.token);
   const dispatch = useDispatch();
+  const screens = useBreakpoint();
   let initialValues = {}
   if (data) {
     initialValues = produce(data, (draft: TaskType) => {
@@ -169,7 +173,7 @@ const TaskComponent = ({ editable, data, id, onClose, display }: Props) => {
         <Form.Item
           name="complete"
           valuePropName="checked"
-          wrapperCol={{ offset: 6, span: 18 }}
+          wrapperCol={screens.sm ? { offset: 6, span: 18 } : { span: 24 }}
         >
           <Checkbox disabled={!editable}>Task complete</Checkbox>
         </Form.Item>

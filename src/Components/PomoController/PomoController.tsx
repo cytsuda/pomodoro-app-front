@@ -11,7 +11,7 @@ import { useDispatch } from "react-redux";
 import { setPomos } from "@/Redux/pomosReducers"
 
 // AntD
-import { Card, Typography, notification } from "antd";
+import { Card, notification } from "antd";
 
 // Custom Components
 import CountdownComponent from "@/Components/Contdown/Countdown";
@@ -21,7 +21,6 @@ import classes from "./PomoController.module.less";
 
 // Deconstructors
 const { Meta } = Card;
-const { Text } = Typography;
 
 interface Props {
   className?: string;
@@ -32,7 +31,6 @@ interface Props {
 
 const PomoController = ({ className, user, task }: Props) => {
   const dispatch = useDispatch();
-  const { pomoConfig } = user.userConfig;
 
   const getAllPomos = useCallback(async () => {
     try {
@@ -98,12 +96,6 @@ const PomoController = ({ className, user, task }: Props) => {
             : null
         }
       />
-      <div className={classes.cardInfo}>
-        <Text>Work Duration: {pomoConfig.workDuration}</Text>
-        <Text>Short Break: {pomoConfig.shortBreakDuration}</Text>
-        <Text>Long Break: {pomoConfig.longBreakDuration}</Text>
-        <Text>Pomo Before Long Break: {pomoConfig.pomoBeforeLongBreak}</Text>
-      </div>
     </Card >
   );
 }

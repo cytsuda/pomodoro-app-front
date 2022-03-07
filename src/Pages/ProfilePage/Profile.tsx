@@ -7,8 +7,8 @@ import { useSelector } from 'react-redux';
 // import { getUser, setPomoConfig } from "@/Redux/userReducer";
 
 // AntDesign
-import { Row, Col, Avatar, Typography, Input } from "antd";
-import { UserOutlined, EditOutlined } from '@ant-design/icons';
+import { Row, Col, Typography, Input } from "antd";
+import { EditOutlined } from '@ant-design/icons';
 
 // Custom Components
 import PomoConfigComponent from "@/Components/PomoConfigComponent/PomoConfigComponent";
@@ -39,15 +39,8 @@ const ProfilePage = () => {
   return (
     <div>
       <Row gutter={[32, 32]}>
-        <Col span={6}>
-          <div className={classes.img}>
-            <Avatar
-              size={{ xs: 24, sm: 32, md: 40, lg: 64, xl: 80, xxl: 100 }}
-              icon={<UserOutlined />}
-            />
-          </div>
-        </Col>
-        <Col span={18}>
+
+        <Col xs={{ span: 24 }}>
           <div className={classes.info}>
             <div className={classes.infoCtrl}>
               <Title level={4}>Profile Info</Title>
@@ -80,13 +73,13 @@ const ProfilePage = () => {
             </div>
           </div>
         </Col>
-        <Col span={8}>
+        <Col xs={{ span: 24 }} md={{ span: 12 }} xxl={{ span: 8 }}>
           <PomoConfigComponent />
         </Col>
-        <Col span={8}>
+        <Col xs={{ span: 24 }} md={{ span: 12 }} xxl={{ span: 8 }}>
           <GoalsConfigComponent />
         </Col>
-        <Col span={8}>
+        <Col xs={{ span: 24 }} md={{ span: 12 }} xxl={{ span: 8 }}>
           <PreferenceConfigComponent />
         </Col>
 
