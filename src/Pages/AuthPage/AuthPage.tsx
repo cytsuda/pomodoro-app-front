@@ -142,7 +142,7 @@ const LoginPage = () => {
 
   return (
     <div className={classes.container}>
-      <Card className={classes.card} title="this is the login page"
+      <Card className={classes.card}
         tabList={tabList}
         activeTabKey={tab.tab}
         onTabChange={(key: string) => {
@@ -156,7 +156,3 @@ const LoginPage = () => {
 }
 
 export default LoginPage;
-/*
-    identifier: 'user@strapi.io',
-    password: 'strapiPassword',
-*/

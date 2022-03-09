@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import moment from 'moment'
 /**
  * 
 type HistoryType = {
@@ -42,7 +43,7 @@ type SetHistoryType = {
   index: number,
   scope: string,
   data: ScopeHistoryDateType[]
-  currentHistory: CurrentHistoryType
+  currentHistory?: CurrentHistoryType
 }
 
 export const historySlice = createSlice({
@@ -54,7 +55,9 @@ export const historySlice = createSlice({
         data: action.payload.data,
         scope: action.payload.scope
       }
-      state.currentHistory = action.payload.currentHistory
+      if (action.payload.currentHistory && action.payload.scope ===  moment().format("YYYY-MM")) {
+        state.currentHistory = action.payload.currentHistory
+      }
 
     },
   },

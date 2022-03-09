@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setHistory } from "@/Redux/historyReducer";
 
 // Ant Design
-import { Row, Col, Calendar, Typography, List, Button, Tooltip } from "antd"
+import { Row, Col, Calendar, Typography, List, Tooltip } from "antd"
 import {
   WarningOutlined, CheckCircleOutlined, CalendarOutlined, ClockCircleOutlined
 
@@ -162,11 +162,55 @@ const HistoryPage = () => {
       } else {
         return <Text type="warning" ><WarningOutlined /> {total}</Text>
       }
+    } else if (checkIndex <= moment().month()) {
+      return <Text>Loading</Text>
     }
   }
 
-  const panelHandler = (date: Moment, mode: string) => {
+  const panelHandler = async (date: Moment, mode: string) => {
     if (mode === "year") {
+      const monthNumber = moment().month();
+      for (let i = 0; i < monthNumber; i++) {
+        try {
+          const newDate = moment().month(i);
+          const response = await axios(token).get(p.apiPomos + "?" + q.queryAllPomoTime(newDate, 'month'));
+          const { pagination } = response.data.meta;
+          const { data: pomos } = response.data;
+          let monthlyPomos = [...pomos];
+          for (let ind = 0; ind < pagination.pageCount; ind++) {
+            if (ind !== 0) {
+              const newResp = await axios(token).get(p.apiPomos + "?" + q.queryAllPomoTime(newDate, 'month', ind + 1));
+              const { data: newPomos } = newResp.data;
+              monthlyPomos = monthlyPomos.concat(newPomos);
+            }
+          }
+          const { historyArray } = historyFormat({ pomoArray: monthlyPomos, value: pagination.total });
+
+          dispatch(setHistory({
+            index: i,
+            scope: moment().format("YYYY-MM"),
+            data: historyArray,
+          }));
+
+        } catch (err) {
+          if (request.isAxiosError(err) && err.response) {
+            const { data } = err.response;
+            const { error } = data;
+            openNotification({
+              type: 'error',
+              message: "An error has occurred",
+              description: `Error: ${error.message}`
+            });
+          } else {
+            console.log(err);
+            openNotification({
+              type: 'error',
+              message: "An error has occurred",
+              description: `Error: unknown error.`
+            });
+          }
+        }
+      }
       setFilter(prev => ({ ...prev, filterDay: false }))
     } else {
       setFilter(prev => ({ ...prev, filterDay: true, day: date.format() }))

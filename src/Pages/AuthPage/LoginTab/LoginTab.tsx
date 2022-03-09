@@ -61,9 +61,6 @@ const LoginTab = (props: LoginTabTypes) => {
             <Checkbox>Remember me</Checkbox>
           </Form.Item>
 
-          <a className={classes.forgot} href="/">
-            Forgot password
-          </a>
         </Form.Item>
         <Form.Item >
           <Button type="primary" htmlType="submit" disabled={loading}>{loading ? <SyncOutlined /> : "Submit"}</Button>

@@ -46,7 +46,6 @@ const LayoutPage = () => {
   const dispatch = useDispatch();
   const screens = useBreakpoint();
 
-  console.log(screens);
 
   const [collapse, setCollapse] = useState<boolean>(false);
 
